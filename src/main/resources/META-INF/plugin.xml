@@ -1,0 +1,85 @@
+<!-- Plugin Configuration File: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN, cannot be changed between the plugin versions. -->
+    <id>dev.rambris.amiga-amos</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-name -->
+    <name>Amiga-amos</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor url="https://www.yourcompany.com">YourCompany</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-description -->
+    <description><![CDATA[
+        Enter short description for your plugin here.<br>
+        <em>most HTML tags may be used</em>
+    ]]></description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensionPoints>
+        <extensionPoint
+                qualifiedName="dev.rambris.amigaamos.definitionResource"
+                beanClass="dev.rambris.amigaamos.lang.AmosDefinitionResourceBean"
+                dynamic="true"/>
+    </extensionPoints>
+
+    <resource-bundle>messages.MyMessageBundle</resource-bundle>
+    <extensions defaultExtensionNs="com.intellij">
+        <fileType
+                name="AMOS File"
+                language="AMOS"
+                implementationClass="dev.rambris.amigaamos.lang.AmosFileType"
+                fieldName="INSTANCE"
+                extensions="asc"/>
+        <lang.syntaxHighlighterFactory
+                language="AMOS"
+                implementationClass="dev.rambris.amigaamos.lang.AmosSyntaxHighlighterFactory"/>
+        <lang.parserDefinition
+                language="AMOS"
+                implementationClass="dev.rambris.amigaamos.lang.AmosParserDefinition"/>
+        <lang.foldingBuilder
+                language="AMOS"
+                implementationClass="dev.rambris.amigaamos.lang.AmosFoldingBuilder"/>
+        <completion.contributor
+                language="AMOS"
+                implementationClass="dev.rambris.amigaamos.lang.AmosCompletionContributor"/>
+        <gotoDeclarationHandler
+                implementationClass="dev.rambris.amigaamos.lang.AmosGotoDeclarationHandler"/>
+        <renameHandler
+                implementation="dev.rambris.amigaamos.lang.AmosRenameHandler"/>
+        <lang.findUsagesProvider
+                language="AMOS"
+                implementationClass="dev.rambris.amigaamos.lang.AmosFindUsagesProvider"/>
+        <codeInsight.parameterInfo
+                language="AMOS"
+                implementationClass="dev.rambris.amigaamos.lang.AmosParameterInfoHandler"/>
+        <lang.documentationProvider
+                language="AMOS"
+                implementationClass="dev.rambris.amigaamos.lang.AmosDocumentationProvider"/>
+        <documentationProvider
+                implementation="dev.rambris.amigaamos.lang.AmosDocumentationProvider"/>
+        <lang.commenter
+                language="AMOS"
+                implementationClass="dev.rambris.amigaamos.lang.AmosCommenter"/>
+        <localInspection
+                language="AMOS"
+                shortName="AmosSetBufferPosition"
+                displayName="Set Buffer should be first instruction"
+                groupPath="AMOS"
+                enabledByDefault="true"
+                level="WARNING"
+                implementationClass="dev.rambris.amigaamos.lang.AmosSetBufferPositionInspection"/>
+    </extensions>
+    <extensions defaultExtensionNs="dev.rambris.amigaamos">
+        <definitionResource resourcePath="amos/definitions/core.json"/>
+        <definitionResource resourcePath="amos/definitions/compact.json"/>
+        <definitionResource resourcePath="amos/definitions/ioports.json"/>
+        <definitionResource resourcePath="amos/definitions/music.json"/>
+        <definitionResource resourcePath="amos/definitions/request.json"/>
+    </extensions>
+</idea-plugin>

@@ -1,0 +1,36 @@
+{
+  "definitions": [
+    {
+      "name": "FAKE EXT$",
+      "kind": "function",
+      "returnType": "string",
+      "documentation": "Test extension-provided string function.",
+      "link": "https://amospromanual.dev/14-appendix-d-extensions.html#test-fake-ext-dollar",
+      "signatures": [
+        {
+          "presentation": "Fake Ext$(value$)",
+          "parameters": [
+            { "kind": "value", "name": "value$", "valueType": "string" }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DRAW",
+      "kind": "instruction",
+      "documentation": "Extended draw documentation from test resource.",
+      "link": "https://amospromanual.dev/06-04-graphics.html#i-draw",
+      "signatures": [
+        {
+          "presentation": "Draw To x2, y2",
+          "parameters": [
+            { "kind": "keyword", "keyword": "To" },
+            { "kind": "value", "name": "x2", "valueType": "integer" },
+            { "kind": "value", "name": "y2", "valueType": "integer" }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
