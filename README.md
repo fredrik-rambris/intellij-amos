@@ -44,13 +44,6 @@ Bundled definition files:
 - Core definitions are always enabled.
 - Apply is blocked when multiple enabled extensions share the same slot.
 
-## Command index
-
-`src/main/resources/amos/commands.tsv` is a static bundled file covering the full AMOS command
-vocabulary: instructions, functions, structures, reserved variables, AMAL and Interface commands.
-Entries already modelled in a definition JSON file are used for keyword lexing only; the
-definition files are the authoritative source for completion, documentation and signatures.
-
 The AMOS Professional manual is **not** required to build the plugin.
 
 ## Development commands
@@ -59,6 +52,30 @@ The AMOS Professional manual is **not** required to build the plugin.
 ./gradlew --no-daemon test
 ./gradlew --no-daemon runIde
 ./gradlew --no-daemon build
+./gradlew --no-daemon buildPlugin
+```
+
+## Distributable package
+
+Build the installable plugin ZIP with:
+
+```bash
+./gradlew --no-daemon buildPlugin
+```
+
+The generated archive is written to:
+
+- `build/distributions/amiga-amos-1.0-SNAPSHOT.zip`
+
+You can install that ZIP from IntelliJ IDEA using:
+
+- `Settings` / `Plugins` / gear icon / `Install Plugin from Disk...`
+
+Useful verification tasks:
+
+```bash
+./gradlew --no-daemon verifyPlugin
+./gradlew --no-daemon verifyPluginStructure
 ```
 
 ## Useful source files
