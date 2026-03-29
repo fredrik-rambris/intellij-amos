@@ -57,6 +57,10 @@
         <completion.contributor
                 language="AMOS"
                 implementationClass="dev.rambris.amigaamos.lang.AmosCompletionContributor"/>
+        <completion.confidence
+                language="AMOS"
+                implementationClass="dev.rambris.amigaamos.lang.AmosCompletionConfidence"
+                order="first"/>
         <gotoDeclarationHandler
                 implementation="dev.rambris.amigaamos.lang.AmosGotoDeclarationHandler"/>
         <renameHandler
@@ -72,6 +76,7 @@
                 implementationClass="dev.rambris.amigaamos.lang.AmosDocumentationProvider"/>
         <documentationProvider
                 implementation="dev.rambris.amigaamos.lang.AmosDocumentationProvider"/>
+        <typedHandler implementationClass="dev.rambris.amigaamos.lang.AmosTypedHandler"/>
         <lang.commenter
                 language="AMOS"
                 implementationClass="dev.rambris.amigaamos.lang.AmosCommenter"/>

@@ -35,7 +35,35 @@ class AmosCompletionContributorTest : BasePlatformTestCase() {
         myFixture.lookup.currentItem = lookupElements!!.first { it.lookupString == "MID$" }
         myFixture.finishLookup('\n')
 
-        myFixture.checkResult("print MID$(<caret>)")
+        myFixture.checkResult("print Mid$(<caret>)")
+    }
+
+    fun testInstructionCompletionInsertsCamelCaseWithTrailingSpace() {
+        myFixture.configureByText(
+            "sample.asc",
+            "pri<caret>"
+        )
+
+        val lookupElements = myFixture.completeBasic()
+        assertNotNull(lookupElements)
+        myFixture.lookup.currentItem = lookupElements!!.first { it.lookupString == "PRINT" }
+        myFixture.finishLookup('\n')
+
+        myFixture.checkResult("Print <caret>")
+    }
+
+    fun testFunctionWithoutParensCompletionInsertsFormattedNameWithSpace() {
+        myFixture.configureByText(
+            "sample.asc",
+            "x=tim<caret>"
+        )
+
+        val lookupElements = myFixture.completeBasic()
+        assertNotNull(lookupElements)
+        myFixture.lookup.currentItem = lookupElements!!.first { it.lookupString == "TIMER" }
+        myFixture.finishLookup('\n')
+
+        myFixture.checkResult("x=Timer <caret>")
     }
 
     fun testMidFirstParameterSuggestsStringVariables() {
@@ -279,7 +307,33 @@ class AmosCompletionContributorTest : BasePlatformTestCase() {
         assertNotNull(items)
         assertContainsElements(items!!.map { it.lookupString }, "ROOT_VALUE")
     }
+
+    fun testForRangeKeywordCompletionSuggestsToOnExplicitCompletion() {
+        myFixture.configureByText(
+            "sample.asc",
+            "for y=5 <caret>"
+        )
+
+        val items = myFixture.completeBasic()
+        assertNotNull(items)
+        val lookupStrings = items!!.map { it.lookupString }
+        assertContainsElements(lookupStrings, "To")
+    }
+
+    fun testForRangeDoesNotAutoPopupAfterNumericLiteral() {
+        myFixture.configureByText(
+            "sample.asc",
+            "for y=5<caret>"
+        )
+
+        myFixture.type(" ")
+
+        myFixture.checkResult("for y=5 To <caret>")
+        assertNull(myFixture.lookup)
+    }
 }
+
+
 
 
 

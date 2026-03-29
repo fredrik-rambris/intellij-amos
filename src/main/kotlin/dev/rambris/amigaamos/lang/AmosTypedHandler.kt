@@ -9,7 +9,28 @@ import com.intellij.psi.PsiFile
 
 class AmosTypedHandler : TypedHandlerDelegate() {
     override fun beforeCharTyped(c: Char, project: Project, editor: Editor, file: PsiFile, fileType: FileType): Result {
-        if (c != '\t' || file !is AmosFile) {
+        if (file !is AmosFile) {
+            return Result.CONTINUE
+        }
+
+        if (c == ' ') {
+            val offset = editor.caretModel.offset
+            val source = file.text
+            if (offset > 0 && source[offset - 1].isWhitespace()) {
+                return Result.CONTINUE
+            }
+
+            val withTypedSpace = source.substring(0, offset) + " " + source.substring(offset)
+            val expected = AmosInstructionRegistry.expectedParameter(withTypedSpace, offset + 1, project)
+            val expectedKeyword = expected?.parameter?.keyword
+            if (expected?.parameter?.kind == AmosParameterKind.KEYWORD && expectedKeyword.equals("To", ignoreCase = true)) {
+                editor.document.insertString(offset, " To ")
+                editor.caretModel.moveToOffset(offset + 4)
+                return Result.STOP
+            }
+        }
+
+        if (c != '\t') {
             return Result.CONTINUE
         }
 
@@ -49,5 +70,3 @@ class AmosTypedHandler : TypedHandlerDelegate() {
         return Result.CONTINUE
     }
 }
-
-

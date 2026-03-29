@@ -5,30 +5,11 @@ import com.intellij.psi.tree.IElementType
 import java.util.Locale
 
 object AmosCodeStyleFormatter {
-    private const val blockIndentSize = 3
+    private const val blockIndentSize = AmosStatementSupport.blockIndentSize
     private const val inlineIfStatement = "IF INLINE"
 
-    private val openingStatements = setOf(
-        "IF",
-        "FOR",
-        "WHILE",
-        "REPEAT",
-        "DO",
-        "PROCEDURE",
-        "ELSE",
-        "ELSE IF"
-    )
-
-    private val closingStatements = setOf(
-        "END IF",
-        "NEXT",
-        "WEND",
-        "UNTIL",
-        "LOOP",
-        "END PROC",
-        "ELSE",
-        "ELSE IF"
-    )
+    private val openingStatements = AmosStatementSupport.openingKeys
+    private val closingStatements = AmosStatementSupport.closingKeys
 
     fun format(source: String): String {
         if (source.isEmpty()) {
@@ -319,6 +300,8 @@ object AmosCodeStyleFormatter {
         return casedCore + suffix
     }
 }
+
+
 
 
 

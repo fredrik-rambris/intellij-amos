@@ -99,6 +99,8 @@ class AmosCompletionContributor : CompletionContributor() {
 
                     AmosCommandIndex.commands.forEach { command ->
                         val definition = AmosDefinitionRegistry.definitionFor(command.name, null, project)
+                        val formattedName = definition?.formattedName()
+                            ?: AmosCodeStyleFormatter.formatLine(command.name)
                         val signatures = definition?.takeIf { it.kind == AmosDefinitionKind.FUNCTION }?.signatures.orEmpty()
                         val instructionSignatures = definition
                             ?.takeIf { it.kind == AmosDefinitionKind.INSTRUCTION || it.kind == AmosDefinitionKind.STRUCTURE }
@@ -119,26 +121,25 @@ class AmosCompletionContributor : CompletionContributor() {
                             .withCaseSensitivity(false)
                             .let { base ->
                                 if (signatures.isEmpty()) {
-                                    if (instructionSignatures.isEmpty()) {
+                                    val withTail = if (instructionSignatures.isEmpty()) {
                                         base
                                     } else {
                                         base.withTailText(instructionSignatures.joinToString(" | ") { " $it" }, true)
                                     }
+                                    withTail.withInsertHandler(SpaceInsertHandler(formattedName))
                                 } else {
                                     val withTail = base.withTailText(
                                         signatures.joinToString(" | ") { " ${it.presentation.substringAfter(it.name)}" },
                                         true
                                     )
                                     if (AmosFunctionRegistry.requiresParentheses(command.name, project)) {
-                                        withTail.withInsertHandler(FunctionInsertHandler)
+                                        withTail.withInsertHandler(FunctionParensInsertHandler(formattedName))
                                     } else {
-                                        withTail
+                                        withTail.withInsertHandler(SpaceInsertHandler(formattedName))
                                     }
                                 }
                             }
-                        result.addElement(
-                            builder
-                        )
+                        result.addElement(builder)
                         seenDefinitions += command.name.uppercase(Locale.ROOT)
                     }
 
@@ -155,6 +156,7 @@ class AmosCompletionContributor : CompletionContributor() {
                                 return@forEach
                             }
 
+                            val formattedName = definition.formattedName()
                             val builder = LookupElementBuilder.create(definition.name)
                                 .withTypeText(definition.kind.name.lowercase(Locale.ROOT), true)
                                 .withCaseSensitivity(false)
@@ -165,9 +167,9 @@ class AmosCompletionContributor : CompletionContributor() {
                                             true
                                         )
                                         if (AmosFunctionRegistry.requiresParentheses(definition.name, project)) {
-                                            withTail.withInsertHandler(FunctionInsertHandler)
+                                            withTail.withInsertHandler(FunctionParensInsertHandler(formattedName))
                                         } else {
-                                            withTail
+                                            withTail.withInsertHandler(SpaceInsertHandler(formattedName))
                                         }
                                     } else {
                                         base.withTailText(
@@ -175,7 +177,7 @@ class AmosCompletionContributor : CompletionContributor() {
                                                 " ${it.presentation.substringAfterDefinitionName(definition.name).trimStart()}"
                                             },
                                             true
-                                        )
+                                        ).withInsertHandler(SpaceInsertHandler(formattedName))
                                     }
                                 }
 
@@ -362,20 +364,42 @@ class AmosCompletionContributor : CompletionContributor() {
         return if (startsWith(definitionName, ignoreCase = true)) substring(definitionName.length) else this
     }
 
-    private object FunctionInsertHandler : InsertHandler<com.intellij.codeInsight.lookup.LookupElement> {
+    private fun AmosCallableDefinition.formattedName(): String =
+        signatures.firstOrNull()?.presentation?.take(name.length)
+            ?: AmosCodeStyleFormatter.formatLine(name)
+
+    private class SpaceInsertHandler(private val formattedName: String) :
+        InsertHandler<com.intellij.codeInsight.lookup.LookupElement> {
+
         override fun handleInsert(context: InsertionContext, item: com.intellij.codeInsight.lookup.LookupElement) {
             val document = context.document
-            val tailOffset = context.tailOffset
-            val hasOpeningParen = tailOffset < document.textLength && document.charsSequence[tailOffset] == '('
+            val insertSpace = context.completionChar != ' '
+            val inserted = if (insertSpace) "$formattedName " else formattedName
+            document.replaceString(context.startOffset, context.tailOffset, inserted)
+            context.editor.caretModel.moveToOffset(context.startOffset + inserted.length)
+            context.commitDocument()
+        }
+    }
 
+    private class FunctionParensInsertHandler(private val formattedName: String) :
+        InsertHandler<com.intellij.codeInsight.lookup.LookupElement> {
+
+        override fun handleInsert(context: InsertionContext, item: com.intellij.codeInsight.lookup.LookupElement) {
+            val document = context.document
+            document.replaceString(context.startOffset, context.tailOffset, formattedName)
+            val newTailOffset = context.startOffset + formattedName.length
+            val hasOpeningParen =
+                newTailOffset < document.textLength && document.charsSequence[newTailOffset] == '('
             if (!hasOpeningParen) {
-                document.insertString(tailOffset, "()")
+                document.insertString(newTailOffset, "()")
             }
-
-            context.editor.caretModel.moveToOffset(tailOffset + 1)
+            context.editor.caretModel.moveToOffset(newTailOffset + 1)
             context.commitDocument()
             AutoPopupController.getInstance(context.project)
-                .autoPopupParameterInfo(context.editor, context.file.findElementAt((tailOffset - 1).coerceAtLeast(0)))
+                .autoPopupParameterInfo(
+                    context.editor,
+                    context.file.findElementAt((newTailOffset - 1).coerceAtLeast(0))
+                )
         }
     }
 }

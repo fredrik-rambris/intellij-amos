@@ -3,6 +3,7 @@ package dev.rambris.amigaamos.lang
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
 import java.util.Locale
+import kotlin.math.max
 
 data class AmosStatementSegment(
     val startOffset: Int,
@@ -13,10 +14,16 @@ data class AmosStatementSegment(
 )
 
 object AmosStatementSupport {
+    const val blockIndentSize = 3
+
+    val openingKeys = setOf("IF", "FOR", "WHILE", "REPEAT", "DO", "PROCEDURE", "ELSE", "ELSE IF")
+    val closingKeys = setOf("END IF", "NEXT", "WEND", "UNTIL", "LOOP", "END PROC", "ELSE", "ELSE IF")
+
     private val labelPattern = Regex("""[A-Za-z_][A-Za-z0-9_$#]*|\d+""")
     private val numberedLinePattern = Regex("""^(\d+)([ \t]+)(.+)$""")
     private val symbolicLabelDeclarationPattern = Regex("""^([A-Za-z_][A-Za-z0-9_$#]*)\s*:.*$""")
     private val thenWordPattern = Regex("""\bTHEN\b""")
+    private val forIndexPattern = Regex("""^FOR\s+([A-Z_][A-Z0-9_$#]*)\s*=""", RegexOption.IGNORE_CASE)
 
     fun declaredLabels(source: String): List<String> {
         val labels = linkedSetOf<String>()
@@ -134,6 +141,20 @@ object AmosStatementSupport {
         }
     }
 
+    /**
+     * Scans [lines] from index 0 up to (but not including) [targetLine] and returns the
+     * indent level that [targetLine] should start at.
+     */
+    fun computeIndentLevelAtLine(lines: List<String>, targetLine: Int): Int {
+        var level = 0
+        for (i in 0 until minOf(targetLine, lines.size)) {
+            val key = statementKey(lines[i].trimStart())
+            if (key in closingKeys) level = max(0, level - 1)
+            if (key in openingKeys) level++
+        }
+        return level
+    }
+
     fun isInlineIfStatement(text: String): Boolean {
         val normalized = text.trimStart().uppercase(Locale.ROOT)
         if (!normalized.startsWith("IF")) {
@@ -143,6 +164,28 @@ object AmosStatementSupport {
         val thenMatch = thenWordPattern.find(normalized) ?: return false
         val tail = normalized.substring(thenMatch.range.last + 1).trimStart()
         return tail.isNotEmpty()
+    }
+
+    fun autoCloseStatementFor(text: String): String? {
+        val normalized = text.trimStart()
+        val key = statementKey(normalized)
+        return when (key) {
+            "FOR" -> {
+                val indexName = extractForIndexName(normalized)
+                if (indexName == null) "Next" else "Next $indexName"
+            }
+            "IF" -> if (isInlineIfStatement(normalized)) null else "End If"
+            "WHILE" -> "Wend"
+            "REPEAT" -> "Until"
+            "DO" -> "Loop"
+            "PROCEDURE" -> "End Proc"
+            else -> null
+        }
+    }
+
+    private fun extractForIndexName(text: String): String? {
+        val match = forIndexPattern.find(text) ?: return null
+        return match.groupValues[1].uppercase(Locale.ROOT)
     }
 
     private fun isLabelDeclaration(text: String): Boolean {
@@ -165,5 +208,3 @@ object AmosStatementSupport {
         return tokenType == TokenType.WHITE_SPACE && (tokenText.contains('\n') || tokenText.contains('\r'))
     }
 }
-
-
