@@ -12,6 +12,7 @@ class AmosFindUsagesProvider : FindUsagesProvider {
             AmosLexer(),
             TokenSet.create(
                 AmosTokenTypes.identifier,
+                AmosTokenTypes.keyword,
                 AmosTokenTypes.stringVariable,
                 AmosTokenTypes.floatVariable,
                 AmosTokenTypes.number
@@ -24,6 +25,7 @@ class AmosFindUsagesProvider : FindUsagesProvider {
     override fun canFindUsagesFor(psiElement: PsiElement): Boolean {
         val type = psiElement.node?.elementType ?: return false
         return type == AmosTokenTypes.identifier ||
+            type == AmosTokenTypes.keyword ||
             type == AmosTokenTypes.stringVariable ||
             type == AmosTokenTypes.floatVariable ||
             type == AmosTokenTypes.number
@@ -46,7 +48,8 @@ class AmosFindUsagesProvider : FindUsagesProvider {
     override fun getNodeText(element: PsiElement, useFullName: Boolean): String = element.text
 
     private fun isProcedureSymbol(element: PsiElement): Boolean {
-        if (element.node?.elementType != AmosTokenTypes.identifier) {
+        val type = element.node?.elementType
+        if (type != AmosTokenTypes.identifier && type != AmosTokenTypes.keyword) {
             return false
         }
 

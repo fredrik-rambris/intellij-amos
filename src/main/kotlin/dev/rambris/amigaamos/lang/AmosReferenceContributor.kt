@@ -55,6 +55,7 @@ class AmosReferenceContributor : PsiReferenceContributor() {
 
     private fun isNavigableToken(type: IElementType): Boolean {
         return type == AmosTokenTypes.identifier ||
+            type == AmosTokenTypes.keyword ||
             type == AmosTokenTypes.stringVariable ||
             type == AmosTokenTypes.floatVariable ||
             type == AmosTokenTypes.number
@@ -255,7 +256,7 @@ internal object AmosSymbolIndex {
                 return labelDeclarations[canonicalName]
             }
 
-            if (tokenType == AmosTokenTypes.identifier) {
+            if (isProcedureToken(tokenType) && isProcedureReferencePosition(source, tokenType, elementOffset)) {
                 val procedureOffset = procedureDeclarations[canonicalName]
                 if (procedureOffset != null) {
                     return procedureOffset
@@ -278,6 +279,7 @@ internal object AmosSymbolIndex {
             while (lexer.tokenType != null) {
                 val tokenType = lexer.tokenType
                 if (tokenType == AmosTokenTypes.identifier ||
+                    tokenType == AmosTokenTypes.keyword ||
                     tokenType == AmosTokenTypes.stringVariable ||
                     tokenType == AmosTokenTypes.floatVariable ||
                     tokenType == AmosTokenTypes.number
@@ -316,6 +318,45 @@ internal object AmosSymbolIndex {
             ).uppercase(Locale.ROOT)
 
             return prefix.startsWith("GOTO ") || prefix.startsWith("GOSUB ")
+        }
+
+        private fun isProcedureToken(tokenType: IElementType): Boolean {
+            return tokenType == AmosTokenTypes.identifier || tokenType == AmosTokenTypes.keyword
+        }
+
+        private fun isProcedureReferencePosition(source: String, tokenType: IElementType, elementOffset: Int): Boolean {
+            if (tokenType == AmosTokenTypes.identifier) {
+                return true
+            }
+
+            val clampedOffset = elementOffset.coerceIn(0, source.length)
+            var start = clampedOffset
+            var startsAtLineStart = true
+            while (start > 0) {
+                val previous = source[start - 1]
+                if (previous == '\n' || previous == '\r' || previous == ':') {
+                    startsAtLineStart = previous != ':'
+                    break
+                }
+                start--
+            }
+
+            val prefix = AmosStatementSupport.normalizeForAnalysis(
+                source.substring(start, clampedOffset),
+                startsAtLineStart
+            ).uppercase(Locale.ROOT)
+
+            if (prefix.startsWith("PROCEDURE ") || prefix.startsWith("PROC ")) {
+                return true
+            }
+
+            val procIndex = prefix.lastIndexOf(" PROC ")
+            if (procIndex < 0) {
+                return false
+            }
+
+            val tailAfterProc = prefix.substring(procIndex + " PROC ".length)
+            return tailAfterProc.isEmpty() || tailAfterProc.matches(Regex("""[A-Z0-9_$#,\s]+"""))
         }
     }
 

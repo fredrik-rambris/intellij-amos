@@ -42,6 +42,15 @@
         <lang.parserDefinition
                 language="AMOS"
                 implementationClass="dev.rambris.amigaamos.lang.AmosParserDefinition"/>
+        <annotator
+                language="AMOS"
+                implementationClass="dev.rambris.amigaamos.lang.AmosProcedureNameAnnotator"/>
+        <lang.formatter
+                language="AMOS"
+                implementationClass="dev.rambris.amigaamos.lang.AmosFormattingModelBuilder"/>
+        <lang.lineIndentProvider
+                language="AMOS"
+                implementationClass="dev.rambris.amigaamos.lang.AmosLineIndentProvider"/>
         <lang.foldingBuilder
                 language="AMOS"
                 implementationClass="dev.rambris.amigaamos.lang.AmosFoldingBuilder"/>
@@ -49,7 +58,7 @@
                 language="AMOS"
                 implementationClass="dev.rambris.amigaamos.lang.AmosCompletionContributor"/>
         <gotoDeclarationHandler
-                implementationClass="dev.rambris.amigaamos.lang.AmosGotoDeclarationHandler"/>
+                implementation="dev.rambris.amigaamos.lang.AmosGotoDeclarationHandler"/>
         <renameHandler
                 implementation="dev.rambris.amigaamos.lang.AmosRenameHandler"/>
         <lang.findUsagesProvider
@@ -74,6 +83,9 @@
                 enabledByDefault="true"
                 level="WARNING"
                 implementationClass="dev.rambris.amigaamos.lang.AmosSetBufferPositionInspection"/>
+        <postFormatProcessor implementation="dev.rambris.amigaamos.lang.AmosPostFormatProcessor"/>
+        <enterHandlerDelegate
+                implementation="dev.rambris.amigaamos.lang.AmosEnterHandlerDelegate"/>
     </extensions>
     <extensions defaultExtensionNs="dev.rambris.amigaamos">
         <definitionResource resourcePath="amos/definitions/core.json"/>

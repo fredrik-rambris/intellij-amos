@@ -97,6 +97,69 @@ class AmosReferenceContributorTest : BasePlatformTestCase() {
         assertTrue(targets.all { it.text.equals("INIT", ignoreCase = true) })
         assertTrue(targets.all { it.textRange.startOffset < source!!.textRange.startOffset })
     }
+
+    fun testGotoDeclarationOnKeywordProcedureCallResolvesToDefinition() {
+        myFixture.configureByText(
+            "sample.asc",
+            """
+            Proc LI<caret>NE
+            Procedure LINE
+              Print "hello"
+            End Proc
+            """.trimIndent()
+        )
+
+        val source = myFixture.file.findElementAt(myFixture.caretOffset)
+        assertNotNull(source)
+        val targets = gotoHandler.getGotoDeclarationTargets(source, myFixture.caretOffset, myFixture.editor)
+
+        assertNotNull(targets)
+        assertEquals(1, targets!!.size)
+        assertEquals("LINE", targets.single().text.uppercase())
+        assertTrue(targets.single().textRange.startOffset > myFixture.caretOffset)
+    }
+
+    fun testGotoDeclarationOnKeywordProcedureDeclarationReturnsUsages() {
+        myFixture.configureByText(
+            "sample.asc",
+            """
+            Proc LINE
+            Procedure LI<caret>NE
+              Print "hello"
+            End Proc
+            """.trimIndent()
+        )
+
+        val source = myFixture.file.findElementAt(myFixture.caretOffset)
+        assertNotNull(source)
+        val targets = gotoHandler.getGotoDeclarationTargets(source, myFixture.caretOffset, myFixture.editor)
+
+        assertNotNull(targets)
+        assertEquals(1, targets!!.size)
+        assertEquals("LINE", targets.single().text.uppercase())
+        assertTrue(targets.single().textRange.startOffset < source!!.textRange.startOffset)
+    }
+
+    fun testGotoDeclarationOnKeywordProcedureInOnProcListResolvesToDefinition() {
+        myFixture.configureByText(
+            "sample.asc",
+            """
+            Else On M Proc PHILL,LI<caret>NE,SIRCLE,RECTANGLE
+            Procedure LINE
+              Print "hello"
+            End Proc
+            """.trimIndent()
+        )
+
+        val source = myFixture.file.findElementAt(myFixture.caretOffset)
+        assertNotNull(source)
+        val targets = gotoHandler.getGotoDeclarationTargets(source, myFixture.caretOffset, myFixture.editor)
+
+        assertNotNull(targets)
+        assertEquals(1, targets!!.size)
+        assertEquals("LINE", targets.single().text.uppercase())
+        assertTrue(targets.single().textRange.startOffset > myFixture.caretOffset)
+    }
 }
 
 

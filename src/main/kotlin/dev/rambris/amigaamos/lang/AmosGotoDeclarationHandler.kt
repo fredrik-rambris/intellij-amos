@@ -60,6 +60,7 @@ class AmosGotoDeclarationHandler : GotoDeclarationHandler {
 
     private fun isNavigableToken(type: com.intellij.psi.tree.IElementType): Boolean {
         return type == AmosTokenTypes.identifier ||
+            type == AmosTokenTypes.keyword ||
             type == AmosTokenTypes.stringVariable ||
             type == AmosTokenTypes.floatVariable ||
             type == AmosTokenTypes.number

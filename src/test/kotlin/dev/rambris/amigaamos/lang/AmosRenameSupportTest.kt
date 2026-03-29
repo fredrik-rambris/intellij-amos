@@ -68,6 +68,30 @@ class AmosRenameSupportTest : BasePlatformTestCase() {
             """.trimIndent()
         )
     }
+
+    fun testRenameKeywordProcedureRenamesDefinitionAndCalls() {
+        val file = myFixture.configureByText(
+            "sample.asc",
+            """
+            Proc LI<caret>NE
+            Procedure LINE
+              Print "hello"
+            End Proc
+            """.trimIndent()
+        )
+
+        val renamed = AmosRenameSupport.renameAtOffset(file, myFixture.caretOffset, "DRAWLINE")
+
+        assertTrue(renamed)
+        myFixture.checkResult(
+            """
+            Proc DRAWLINE
+            Procedure DRAWLINE
+              Print "hello"
+            End Proc
+            """.trimIndent()
+        )
+    }
 }
 
 

@@ -6,7 +6,7 @@ data class AmosCommand(val name: String, val kind: String)
 
 object AmosCommandIndex {
     private val coreShortKeywords = setOf(
-        "IF", "TO", "DO", "ON", "OR", "AND", "NOT", "MOD", "FN", "AS", "AT", "IN"
+        "IF", "TO", "DO", "ON", "OR", "AND", "NOT", "MOD", "FN", "AS", "AT", "IN", "GR"
     )
 
     val commands: List<AmosCommand> by lazy {

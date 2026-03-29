@@ -16,6 +16,7 @@ object AmosStatementSupport {
     private val labelPattern = Regex("""[A-Za-z_][A-Za-z0-9_$#]*|\d+""")
     private val numberedLinePattern = Regex("""^(\d+)([ \t]+)(.+)$""")
     private val symbolicLabelDeclarationPattern = Regex("""^([A-Za-z_][A-Za-z0-9_$#]*)\s*:.*$""")
+    private val thenWordPattern = Regex("""\bTHEN\b""")
 
     fun declaredLabels(source: String): List<String> {
         val labels = linkedSetOf<String>()
@@ -110,6 +111,38 @@ object AmosStatementSupport {
         }
 
         return trimmed
+    }
+
+    fun statementKey(text: String): String {
+        val normalized = text.trimStart().uppercase(Locale.ROOT)
+        return when {
+            normalized.startsWith("END PROC") -> "END PROC"
+            normalized.startsWith("PROCEDURE") -> "PROCEDURE"
+            normalized.startsWith("END IF") -> "END IF"
+            normalized.startsWith("ELSE IF") -> "ELSE IF"
+            normalized.startsWith("IF") -> "IF"
+            normalized.startsWith("ELSE") -> "ELSE"
+            normalized.startsWith("FOR") -> "FOR"
+            normalized.startsWith("NEXT") -> "NEXT"
+            normalized.startsWith("WHILE") -> "WHILE"
+            normalized.startsWith("WEND") -> "WEND"
+            normalized.startsWith("REPEAT") -> "REPEAT"
+            normalized.startsWith("UNTIL") -> "UNTIL"
+            normalized.startsWith("DO") -> "DO"
+            normalized.startsWith("LOOP") -> "LOOP"
+            else -> ""
+        }
+    }
+
+    fun isInlineIfStatement(text: String): Boolean {
+        val normalized = text.trimStart().uppercase(Locale.ROOT)
+        if (!normalized.startsWith("IF")) {
+            return false
+        }
+
+        val thenMatch = thenWordPattern.find(normalized) ?: return false
+        val tail = normalized.substring(thenMatch.range.last + 1).trimStart()
+        return tail.isNotEmpty()
     }
 
     private fun isLabelDeclaration(text: String): Boolean {

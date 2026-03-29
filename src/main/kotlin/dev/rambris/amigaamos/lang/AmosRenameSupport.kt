@@ -66,12 +66,17 @@ object AmosRenameSupport {
             return null
         }
 
-        val declarationOffset = table.resolveOffset(source, token.type, token.text, token.startOffset)
+        val resolvedDeclarationOffset = table.resolveOffset(source, token.type, token.text, token.startOffset)
+        if (token.type == AmosTokenTypes.keyword && resolvedDeclarationOffset == null) {
+            return null
+        }
+
+        val declarationOffset = resolvedDeclarationOffset
             ?: labelDeclarationOffsetAtToken(table, token)
             ?: firstMatchingTokenOffset(source, token)
             ?: return null
 
-        val resolvedByDeclaration = table.resolveOffset(source, token.type, token.text, token.startOffset) != null ||
+        val resolvedByDeclaration = resolvedDeclarationOffset != null ||
             labelDeclarationOffsetAtToken(table, token) != null
 
         return SymbolTarget(
@@ -178,6 +183,7 @@ object AmosRenameSupport {
 
     private fun isNavigableToken(type: IElementType): Boolean {
         return type == AmosTokenTypes.identifier ||
+            type == AmosTokenTypes.keyword ||
             type == AmosTokenTypes.stringVariable ||
             type == AmosTokenTypes.floatVariable ||
             type == AmosTokenTypes.number

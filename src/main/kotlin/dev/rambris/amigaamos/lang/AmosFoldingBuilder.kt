@@ -6,7 +6,6 @@ import com.intellij.lang.folding.FoldingDescriptor
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import java.util.Locale
 
 class AmosFoldingBuilder : FoldingBuilderEx() {
     override fun buildFoldRegions(root: PsiElement, document: Document, quick: Boolean): Array<FoldingDescriptor> {
@@ -32,7 +31,7 @@ class AmosFoldingBuilder : FoldingBuilderEx() {
 
         for (statement in AmosStatementSupport.splitStatements(source)) {
             val normalized = AmosStatementSupport.normalizeForAnalysis(statement)
-            when (val key = statementKey(normalized)) {
+            when (val key = AmosStatementSupport.statementKey(normalized)) {
                 "IF" -> stack += BlockStart("IF", statement.startOffset, placeholderForBlockStart(normalized, "if ... end if"))
                 "FOR" -> stack += BlockStart("FOR", statement.startOffset, placeholderForBlockStart(normalized, "for ... next"))
                 "WHILE" -> stack += BlockStart("WHILE", statement.startOffset, placeholderForBlockStart(normalized, "while ... wend"))
@@ -80,26 +79,6 @@ class AmosFoldingBuilder : FoldingBuilderEx() {
         descriptors += FoldingDescriptor(root, range, null, start.placeholder)
     }
 
-    private fun statementKey(text: String): String {
-        val normalized = text.trimStart().uppercase(Locale.ROOT)
-        return when {
-            normalized.startsWith("END PROC") -> "END PROC"
-            normalized.startsWith("PROCEDURE") -> "PROCEDURE"
-            normalized.startsWith("END IF") -> "END IF"
-            normalized.startsWith("ELSE IF") -> "ELSE IF"
-            normalized.startsWith("IF") -> "IF"
-            normalized.startsWith("ELSE") -> "ELSE"
-            normalized.startsWith("FOR") -> "FOR"
-            normalized.startsWith("NEXT") -> "NEXT"
-            normalized.startsWith("WHILE") -> "WHILE"
-            normalized.startsWith("WEND") -> "WEND"
-            normalized.startsWith("REPEAT") -> "REPEAT"
-            normalized.startsWith("UNTIL") -> "UNTIL"
-            normalized.startsWith("DO") -> "DO"
-            normalized.startsWith("LOOP") -> "LOOP"
-            else -> ""
-        }
-    }
 
     private data class BlockStart(
         val key: String,
