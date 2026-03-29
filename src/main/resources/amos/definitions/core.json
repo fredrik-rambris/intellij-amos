@@ -3120,7 +3120,7 @@
       "name": "PI#",
       "kind": "function",
       "returnType": "real",
-      "documentation": "Return the constant \u03c0 for trigonometric calculations.",
+      "documentation": "Return the constant π for trigonometric calculations.",
       "signatures": [
         {
           "presentation": "Pi#",
@@ -11250,6 +11250,858 @@
       ],
       "link": "https://amospromanual.dev/14-appendix-f-copper-lists.html#fn-cop-logic",
       "returnType": "integer"
+    },
+    {
+      "name": "ARRAY",
+      "kind": "function",
+      "returnType": "integer",
+      "documentation": "Return the address in memory of the first item in a string array.",
+      "signatures": [
+        {
+          "presentation": "Array(list$(0))",
+          "parameters": [
+            {
+              "kind": "value",
+              "name": "list$",
+              "valueType": "string"
+            }
+          ]
+        }
+      ],
+      "link": "https://amospromanual.dev/09-03-advanced-control-panels.html#fn-array"
+    },
+    {
+      "name": "AUTO VIEW OFF",
+      "kind": "instruction",
+      "documentation": "Disable automatic screen display update. Use View to refresh manually.",
+      "signatures": [
+        {
+          "presentation": "Auto View Off",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/06-01-setting-up-screens.html#i-view"
+    },
+    {
+      "name": "AUTO VIEW ON",
+      "kind": "instruction",
+      "documentation": "Re-enable automatic screen display update after screen commands.",
+      "signatures": [
+        {
+          "presentation": "Auto View On",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/06-01-setting-up-screens.html#i-view"
+    },
+    {
+      "name": "BOB UPDATE OFF",
+      "kind": "instruction",
+      "documentation": "Disable automatic Bob updates, allowing manual control with Bob Update.",
+      "signatures": [
+        {
+          "presentation": "Bob Update Off",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/07-03-updating-objects.html#i-bob-update-onoff"
+    },
+    {
+      "name": "BOB UPDATE ON",
+      "kind": "instruction",
+      "documentation": "Re-enable automatic Bob updates.",
+      "signatures": [
+        {
+          "presentation": "Bob Update On",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/07-03-updating-objects.html#i-bob-update-onoff"
+    },
+    {
+      "name": "CHIP FREE",
+      "kind": "function",
+      "returnType": "integer",
+      "documentation": "Return the amount of available Chip memory in bytes.",
+      "signatures": [
+        {
+          "presentation": "Chip Free",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/03-01-getting-started.html#fn-chip-free"
+    },
+    {
+      "name": "CURS OFF",
+      "kind": "instruction",
+      "documentation": "Hide the text cursor in the current window.",
+      "signatures": [
+        {
+          "presentation": "Curs Off",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/05-06-text.html#i-curs-on-off"
+    },
+    {
+      "name": "CURS ON",
+      "kind": "instruction",
+      "documentation": "Reveal the text cursor in the current window.",
+      "signatures": [
+        {
+          "presentation": "Curs On",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/05-06-text.html#i-curs-on-off"
+    },
+    {
+      "name": "DRAW TO",
+      "kind": "instruction",
+      "documentation": "Draw a line from the current graphics cursor position to the specified coordinates.",
+      "signatures": [
+        {
+          "presentation": "Draw To x,y",
+          "parameters": [
+            {
+              "kind": "value",
+              "name": "x",
+              "valueType": "integer"
+            },
+            {
+              "kind": "value",
+              "name": "y",
+              "valueType": "integer"
+            }
+          ]
+        }
+      ],
+      "link": "https://amospromanual.dev/06-04-graphics.html#i-draw"
+    },
+    {
+      "name": "FAST FREE",
+      "kind": "function",
+      "returnType": "integer",
+      "documentation": "Return the amount of available Fast memory in bytes.",
+      "signatures": [
+        {
+          "presentation": "Fast Free",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/03-01-getting-started.html#fn-fast-free"
+    },
+    {
+      "name": "FLASH OFF",
+      "kind": "instruction",
+      "documentation": "Cancel all active colour flashing sequences.",
+      "signatures": [
+        {
+          "presentation": "Flash Off",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/06-03-screen-effects.html#i-flash"
+    },
+    {
+      "name": "HIDE ON",
+      "kind": "instruction",
+      "documentation": "Hide the mouse pointer immediately, bypassing the HIDE counter.",
+      "signatures": [
+        {
+          "presentation": "Hide On",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/05-08-the-joystick-and-mouse.html#i-hide"
+    },
+    {
+      "name": "INPUT#",
+      "kind": "structure",
+      "documentation": "Read variables from a file or device channel.",
+      "signatures": [
+        {
+          "presentation": "Input # channel,variable list",
+          "parameters": [
+            {
+              "kind": "value",
+              "name": "channel",
+              "valueType": "integer"
+            },
+            {
+              "kind": "value",
+              "name": "variable list",
+              "valueType": "any"
+            }
+          ]
+        }
+      ],
+      "link": "https://amospromanual.dev/10-02-disc-access.html#str-input-pound"
+    },
+    {
+      "name": "INVERSE OFF",
+      "kind": "instruction",
+      "documentation": "Disable inverse (swapped text/background colour) mode.",
+      "signatures": [
+        {
+          "presentation": "Inverse Off",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/05-06-text.html#i-inverse-on-off"
+    },
+    {
+      "name": "INVERSE ON",
+      "kind": "instruction",
+      "documentation": "Enable inverse mode: swap text and background colours when printing.",
+      "signatures": [
+        {
+          "presentation": "Inverse On",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/05-06-text.html#i-inverse-on-off"
+    },
+    {
+      "name": "LINE INPUT#",
+      "kind": "structure",
+      "documentation": "Read variables from a file or device channel using carriage return as separator instead of comma.",
+      "signatures": [
+        {
+          "presentation": "Line Input # channel,variable list",
+          "parameters": [
+            {
+              "kind": "value",
+              "name": "channel",
+              "valueType": "integer"
+            },
+            {
+              "kind": "value",
+              "name": "variable list",
+              "valueType": "any"
+            }
+          ]
+        }
+      ],
+      "link": "https://amospromanual.dev/10-02-disc-access.html#str-line-input-pound"
+    },
+    {
+      "name": "MEMORIZE X",
+      "kind": "instruction",
+      "documentation": "Save the current x-coordinate of the text cursor for later restoration with Remember X.",
+      "signatures": [
+        {
+          "presentation": "Memorize X",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/05-06-text.html#i-memorize-x-y"
+    },
+    {
+      "name": "MEMORIZE Y",
+      "kind": "instruction",
+      "documentation": "Save the current y-coordinate of the text cursor for later restoration with Remember Y.",
+      "signatures": [
+        {
+          "presentation": "Memorize Y",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/05-06-text.html#i-memorize-x-y"
+    },
+    {
+      "name": "MENU MOUSE OFF",
+      "kind": "instruction",
+      "documentation": "Disable menu display when the right mouse button is pressed.",
+      "signatures": [
+        {
+          "presentation": "Menu Mouse Off",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/06-05-menus.html#i-menu-on"
+    },
+    {
+      "name": "MENU MOUSE ON",
+      "kind": "instruction",
+      "documentation": "Enable menu display when the right mouse button is pressed.",
+      "signatures": [
+        {
+          "presentation": "Menu Mouse On",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/06-05-menus.html#i-menu-on"
+    },
+    {
+      "name": "MENU$",
+      "kind": "function",
+      "returnType": "string",
+      "documentation": "Define the appearance of a single menu item.",
+      "signatures": [
+        {
+          "presentation": "Menu$(single item parameters)=normal$",
+          "parameters": [
+            {
+              "kind": "value",
+              "name": "single item parameters",
+              "valueType": "string"
+            },
+            {
+              "kind": "value",
+              "name": "normal$",
+              "valueType": "string"
+            }
+          ]
+        },
+        {
+          "presentation": "Menu$(single item parameters)=normal$,selected$,inactive$,background$",
+          "parameters": [
+            {
+              "kind": "value",
+              "name": "single item parameters",
+              "valueType": "string"
+            },
+            {
+              "kind": "value",
+              "name": "normal$",
+              "valueType": "string"
+            },
+            {
+              "kind": "value",
+              "name": "selected$",
+              "valueType": "string"
+            },
+            {
+              "kind": "value",
+              "name": "inactive$",
+              "valueType": "string"
+            },
+            {
+              "kind": "value",
+              "name": "background$",
+              "valueType": "string"
+            }
+          ]
+        }
+      ],
+      "link": "https://amospromanual.dev/06-05-menus.html#resv-menu-dollar"
+    },
+    {
+      "name": "MOVON",
+      "kind": "function",
+      "returnType": "integer",
+      "documentation": "Check whether a particular object is being moved by Move X or Move Y. Returns -1 while in motion, 0 for static.",
+      "signatures": [
+        {
+          "presentation": "Movon(object number)",
+          "parameters": [
+            {
+              "kind": "value",
+              "name": "object number",
+              "valueType": "integer"
+            }
+          ]
+        }
+      ],
+      "link": "https://amospromanual.dev/07-06-amal.html#fn-movon"
+    },
+    {
+      "name": "ON AMAL",
+      "kind": "instruction",
+      "documentation": "Activate a specific AMAL animation channel by channel number.",
+      "signatures": [
+        {
+          "presentation": "On Amal channel number",
+          "parameters": [
+            {
+              "kind": "value",
+              "name": "channel number",
+              "valueType": "integer"
+            }
+          ]
+        }
+      ],
+      "link": "https://amospromanual.dev/07-06-amal.html#i-on-amal"
+    },
+    {
+      "name": "ON MENU OFF",
+      "kind": "instruction",
+      "documentation": "Disable automatic menu event handling.",
+      "signatures": [
+        {
+          "presentation": "On Menu Off",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/06-05-menus.html#i-on-menu-onoff"
+    },
+    {
+      "name": "ON MENU ON",
+      "kind": "instruction",
+      "documentation": "Enable automatic menu event handling set up by On Menu Proc, Gosub or Goto.",
+      "signatures": [
+        {
+          "presentation": "On Menu On",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/06-05-menus.html#i-on-menu-onoff"
+    },
+    {
+      "name": "PRINT#",
+      "kind": "structure",
+      "documentation": "Write variables to a file or device channel.",
+      "signatures": [
+        {
+          "presentation": "Print # channel,variable list",
+          "parameters": [
+            {
+              "kind": "value",
+              "name": "channel",
+              "valueType": "integer"
+            },
+            {
+              "kind": "value",
+              "name": "variable list",
+              "valueType": "any"
+            }
+          ]
+        }
+      ],
+      "link": "https://amospromanual.dev/10-02-disc-access.html#str-print-pound"
+    },
+    {
+      "name": "RAIN",
+      "kind": "function",
+      "returnType": "integer",
+      "documentation": "Change the colour of a specific scan line in an active rainbow effect.",
+      "signatures": [
+        {
+          "presentation": "Rain(rainbow number,line)=colour",
+          "parameters": [
+            {
+              "kind": "value",
+              "name": "rainbow number",
+              "valueType": "integer"
+            },
+            {
+              "kind": "value",
+              "name": "line",
+              "valueType": "integer"
+            }
+          ]
+        }
+      ],
+      "link": "https://amospromanual.dev/06-03-screen-effects.html#resv-rain"
+    },
+    {
+      "name": "REMEMBER X",
+      "kind": "instruction",
+      "documentation": "Restore the x-coordinate of the text cursor to the position saved by Memorize X.",
+      "signatures": [
+        {
+          "presentation": "Remember X",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/05-06-text.html#i-remember-x-y"
+    },
+    {
+      "name": "REMEMBER Y",
+      "kind": "instruction",
+      "documentation": "Restore the y-coordinate of the text cursor to the position saved by Memorize Y.",
+      "signatures": [
+        {
+          "presentation": "Remember Y",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/05-06-text.html#i-remember-x-y"
+    },
+    {
+      "name": "ROL.B",
+      "kind": "instruction",
+      "documentation": "Rotate a byte value left by the specified number of bit positions.",
+      "signatures": [
+        {
+          "presentation": "Rol.B number,bin value",
+          "parameters": [
+            {
+              "kind": "value",
+              "name": "number",
+              "valueType": "integer"
+            },
+            {
+              "kind": "value",
+              "name": "bin value",
+              "valueType": "integer"
+            }
+          ]
+        }
+      ],
+      "link": "https://amospromanual.dev/14-appendix-a-machine-code.html#i-rol"
+    },
+    {
+      "name": "ROL.W",
+      "kind": "instruction",
+      "documentation": "Rotate a word value left by the specified number of bit positions.",
+      "signatures": [
+        {
+          "presentation": "Rol.W number,bin value",
+          "parameters": [
+            {
+              "kind": "value",
+              "name": "number",
+              "valueType": "integer"
+            },
+            {
+              "kind": "value",
+              "name": "bin value",
+              "valueType": "integer"
+            }
+          ]
+        }
+      ],
+      "link": "https://amospromanual.dev/14-appendix-a-machine-code.html#i-rol"
+    },
+    {
+      "name": "ROL.L",
+      "kind": "instruction",
+      "documentation": "Rotate a long word value left by the specified number of bit positions.",
+      "signatures": [
+        {
+          "presentation": "Rol.L number,bin value",
+          "parameters": [
+            {
+              "kind": "value",
+              "name": "number",
+              "valueType": "integer"
+            },
+            {
+              "kind": "value",
+              "name": "bin value",
+              "valueType": "integer"
+            }
+          ]
+        }
+      ],
+      "link": "https://amospromanual.dev/14-appendix-a-machine-code.html#i-rol"
+    },
+    {
+      "name": "ROR.B",
+      "kind": "instruction",
+      "documentation": "Rotate a byte value right by the specified number of bit positions.",
+      "signatures": [
+        {
+          "presentation": "Ror.B number,bin value",
+          "parameters": [
+            {
+              "kind": "value",
+              "name": "number",
+              "valueType": "integer"
+            },
+            {
+              "kind": "value",
+              "name": "bin value",
+              "valueType": "integer"
+            }
+          ]
+        }
+      ],
+      "link": "https://amospromanual.dev/14-appendix-a-machine-code.html#i-ror"
+    },
+    {
+      "name": "ROR.W",
+      "kind": "instruction",
+      "documentation": "Rotate a word value right by the specified number of bit positions.",
+      "signatures": [
+        {
+          "presentation": "Ror.W number,bin value",
+          "parameters": [
+            {
+              "kind": "value",
+              "name": "number",
+              "valueType": "integer"
+            },
+            {
+              "kind": "value",
+              "name": "bin value",
+              "valueType": "integer"
+            }
+          ]
+        }
+      ],
+      "link": "https://amospromanual.dev/14-appendix-a-machine-code.html#i-ror"
+    },
+    {
+      "name": "ROR.L",
+      "kind": "instruction",
+      "documentation": "Rotate a long word value right by the specified number of bit positions.",
+      "signatures": [
+        {
+          "presentation": "Ror.L number,bin value",
+          "parameters": [
+            {
+              "kind": "value",
+              "name": "number",
+              "valueType": "integer"
+            },
+            {
+              "kind": "value",
+              "name": "bin value",
+              "valueType": "integer"
+            }
+          ]
+        }
+      ],
+      "link": "https://amospromanual.dev/14-appendix-a-machine-code.html#i-ror"
+    },
+    {
+      "name": "SCROLL OFF",
+      "kind": "instruction",
+      "documentation": "Disable automatic scrolling of the current window.",
+      "signatures": [
+        {
+          "presentation": "Scroll Off",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/05-07-windows.html#i-scroll-off"
+    },
+    {
+      "name": "SCROLL ON",
+      "kind": "instruction",
+      "documentation": "Enable automatic scrolling of the current window.",
+      "signatures": [
+        {
+          "presentation": "Scroll On",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/05-07-windows.html#i-scroll-on"
+    },
+    {
+      "name": "SHADE OFF",
+      "kind": "instruction",
+      "documentation": "Disable shading (brightness reduction mask) on subsequent text.",
+      "signatures": [
+        {
+          "presentation": "Shade Off",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/05-06-text.html#i-shade-on-off"
+    },
+    {
+      "name": "SHADE ON",
+      "kind": "instruction",
+      "documentation": "Enable shading: applies a brightness-reducing mask pattern to printed characters.",
+      "signatures": [
+        {
+          "presentation": "Shade On",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/05-06-text.html#i-shade-on-off"
+    },
+    {
+      "name": "SHOW ON",
+      "kind": "instruction",
+      "documentation": "Reveal the mouse pointer immediately, bypassing the internal HIDE/SHOW counter.",
+      "signatures": [
+        {
+          "presentation": "Show On",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/05-08-the-joystick-and-mouse.html#i-show"
+    },
+    {
+      "name": "SPRITE UPDATE OFF",
+      "kind": "instruction",
+      "documentation": "Disable automatic Sprite position updates. Use Sprite Update for manual control.",
+      "signatures": [
+        {
+          "presentation": "Sprite Update Off",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/07-01-hardware-sprites.html#i-sprite-update-onoff"
+    },
+    {
+      "name": "SPRITE UPDATE ON",
+      "kind": "instruction",
+      "documentation": "Re-enable automatic Sprite position updates.",
+      "signatures": [
+        {
+          "presentation": "Sprite Update On",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/07-01-hardware-sprites.html#i-sprite-update-onoff"
+    },
+    {
+      "name": "TIMER",
+      "kind": "function",
+      "returnType": "integer",
+      "documentation": "Reserved variable: count in 50ths of a second since the Amiga was switched on. Can be read or set.",
+      "signatures": [
+        {
+          "presentation": "Timer",
+          "parameters": []
+        },
+        {
+          "presentation": "Timer=v",
+          "parameters": [
+            {
+              "kind": "value",
+              "name": "v",
+              "valueType": "integer"
+            }
+          ]
+        }
+      ],
+      "link": "https://amospromanual.dev/05-03-maths.html#resv-timer"
+    },
+    {
+      "name": "UNDER OFF",
+      "kind": "instruction",
+      "documentation": "Disable underline mode for subsequent text output.",
+      "signatures": [
+        {
+          "presentation": "Under Off",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/05-06-text.html#i-under-on-off"
+    },
+    {
+      "name": "UNDER ON",
+      "kind": "instruction",
+      "documentation": "Enable underline mode for subsequent text output.",
+      "signatures": [
+        {
+          "presentation": "Under On",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/05-06-text.html#i-under-on-off"
+    },
+    {
+      "name": "UPDATE OFF",
+      "kind": "instruction",
+      "documentation": "Disable automatic redrawing of all Bobs and Sprites. Changes accumulate until Update or Update On is called.",
+      "signatures": [
+        {
+          "presentation": "Update Off",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/07-03-updating-objects.html#i-update-onoff"
+    },
+    {
+      "name": "UPDATE ON",
+      "kind": "instruction",
+      "documentation": "Re-enable automatic redrawing of all Bobs and Sprites.",
+      "signatures": [
+        {
+          "presentation": "Update On",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/07-03-updating-objects.html#i-update-onoff"
+    },
+    {
+      "name": "X MOUSE",
+      "kind": "function",
+      "returnType": "integer",
+      "documentation": "Reserved variable: report or set the x-coordinate of the mouse pointer in hardware coordinates.",
+      "signatures": [
+        {
+          "presentation": "X Mouse",
+          "parameters": []
+        },
+        {
+          "presentation": "X Mouse=x",
+          "parameters": [
+            {
+              "kind": "value",
+              "name": "x",
+              "valueType": "integer"
+            }
+          ]
+        }
+      ],
+      "link": "https://amospromanual.dev/05-08-the-joystick-and-mouse.html#resv-x-mouse"
+    },
+    {
+      "name": "XGR",
+      "kind": "function",
+      "returnType": "integer",
+      "documentation": "Return the x-coordinate of the current graphics cursor position.",
+      "signatures": [
+        {
+          "presentation": "Xgr",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/06-04-graphics.html#fn-xgr"
+    },
+    {
+      "name": "Y MOUSE",
+      "kind": "function",
+      "returnType": "integer",
+      "documentation": "Reserved variable: report or set the y-coordinate of the mouse pointer in hardware coordinates.",
+      "signatures": [
+        {
+          "presentation": "Y Mouse",
+          "parameters": []
+        },
+        {
+          "presentation": "Y Mouse=y",
+          "parameters": [
+            {
+              "kind": "value",
+              "name": "y",
+              "valueType": "integer"
+            }
+          ]
+        }
+      ],
+      "link": "https://amospromanual.dev/05-08-the-joystick-and-mouse.html#resv-y-mouse"
+    },
+    {
+      "name": "YGR",
+      "kind": "function",
+      "returnType": "integer",
+      "documentation": "Return the y-coordinate of the current graphics cursor position.",
+      "signatures": [
+        {
+          "presentation": "Ygr",
+          "parameters": []
+        }
+      ],
+      "link": "https://amospromanual.dev/06-04-graphics.html#fn-ygr"
+    },
+    {
+      "name": "AS",
+      "kind": "function",
+      "returnType": "integer",
+      "documentation": "Array Size: return the number of elements in an AMOS Professional array at the given address.",
+      "signatures": [
+        {
+          "presentation": "As(address)",
+          "parameters": [
+            {
+              "kind": "value",
+              "name": "address",
+              "valueType": "integer"
+            }
+          ]
+        }
+      ],
+      "link": "https://amospromanual.dev/09-03-advanced-control-panels.html#intf-as"
     }
   ]
 }

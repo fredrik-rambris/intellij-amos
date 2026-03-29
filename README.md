@@ -44,13 +44,14 @@ Bundled definition files:
 - Core definitions are always enabled.
 - Apply is blocked when multiple enabled extensions share the same slot.
 
-## Command index source
+## Command index
 
-Keyword command index data is generated from:
+`src/main/resources/amos/commands.tsv` is a static bundled file covering the full AMOS command
+vocabulary: instructions, functions, structures, reserved variables, AMAL and Interface commands.
+Entries already modelled in a definition JSON file are used for keyword lexing only; the
+definition files are the authoritative source for completion, documentation and signatures.
 
-- `AmosProManual/14-appendix-g-command-index.html`
-
-During build, Gradle generates `amos/commands.tsv` and bundles it as plugin resources.
+The AMOS Professional manual is **not** required to build the plugin.
 
 ## Development commands
 

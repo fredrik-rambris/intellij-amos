@@ -1,6 +1,4 @@
-import org.gradle.language.jvm.tasks.ProcessResources
 import org.jetbrains.intellij.platform.gradle.tasks.RunIdeTask
-import java.util.Locale
 
 plugins {
     id("java")
@@ -65,57 +63,4 @@ kotlin {
     }
 }
 
-val generateAmosCommandIndex by tasks.registering {
-    val manualFile = layout.projectDirectory.file("AmosProManual/14-appendix-g-command-index.html")
-    val outputFile = layout.buildDirectory.file("generated/resources/amos/commands.tsv")
-
-    inputs.file(manualFile)
-    outputs.file(outputFile)
-
-    doLast {
-        val html = manualFile.asFile.readText(Charsets.UTF_8)
-        val rowRegex = Regex(
-            """<tr[^>]*>\s*<th>\s*<a[^>]*>(.*?)</a>\s*</th>\s*<td>(.*?)</td>""",
-            setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)
-        )
-
-        fun normalizeText(value: String): String {
-            return value
-                .replace(Regex("<[^>]+>"), " ")
-                .replace("&nbsp;", " ")
-                .replace("&amp;", "&")
-                .replace("&#39;", "'")
-                .replace("&quot;", "\"")
-                .replace(Regex("\\s+"), " ")
-                .trim()
-        }
-
-        val deduped = linkedMapOf<String, Pair<String, String>>()
-        rowRegex.findAll(html).forEach { match ->
-            val name = normalizeText(match.groupValues[1])
-            val kind = normalizeText(match.groupValues[2])
-            if (name.isNotEmpty() && kind.isNotEmpty()) {
-                val key = name.uppercase(Locale.ROOT)
-                deduped.putIfAbsent(key, name to kind)
-            }
-        }
-
-        outputFile.get().asFile.apply {
-            parentFile.mkdirs()
-            writeText(
-                deduped.values
-                    .sortedBy { it.first }
-                    .joinToString("\n") { "${it.first}\t${it.second}" },
-                Charsets.UTF_8
-            )
-        }
-    }
-}
-
-tasks.named<ProcessResources>("processResources") {
-    dependsOn(generateAmosCommandIndex)
-    from(generateAmosCommandIndex.map { it.outputs.files.singleFile }) {
-        into("amos")
-    }
-}
 

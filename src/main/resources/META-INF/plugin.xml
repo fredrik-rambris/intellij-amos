@@ -35,6 +35,7 @@
                 implementationClass="dev.rambris.amigaamos.lang.AmosFileType"
                 fieldName="INSTANCE"
                 extensions="asc;amosasc;amosbas"/>
+        <fileTypeDetector implementation="dev.rambris.amigaamos.lang.AmosFileTypeOverrider"/>
         <lang.syntaxHighlighterFactory
                 language="AMOS"
                 implementationClass="dev.rambris.amigaamos.lang.AmosSyntaxHighlighterFactory"/>

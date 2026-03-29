@@ -95,56 +95,7 @@ class AmosCompletionContributor : CompletionContributor() {
                         )
                     }
 
-                    val seenDefinitions = mutableSetOf<String>()
-
-                    AmosCommandIndex.commands.forEach { command ->
-                        val definition = AmosDefinitionRegistry.definitionFor(command.name, null, project)
-                        val formattedName = definition?.formattedName()
-                            ?: AmosCodeStyleFormatter.formatLine(command.name)
-                        val signatures = definition?.takeIf { it.kind == AmosDefinitionKind.FUNCTION }?.signatures.orEmpty()
-                        val instructionSignatures = definition
-                            ?.takeIf { it.kind == AmosDefinitionKind.INSTRUCTION || it.kind == AmosDefinitionKind.STRUCTURE }
-                            ?.signatures
-                            ?.map { it.presentation.substringAfterDefinitionName(definition.name).trimStart() }
-                            .orEmpty()
-                        if (expectedType != null && signatures.isNotEmpty()) {
-                            val returnType = definition?.returnType
-                            if (returnType == null || !matchesExpectedType(returnType, expectedType)) {
-                                return@forEach
-                            }
-                        }
-                        if (expectedType != null && signatures.isEmpty() && instructionSignatures.isEmpty()) {
-                            return@forEach
-                        }
-                        val builder = LookupElementBuilder.create(command.name)
-                            .withTypeText(command.kind, true)
-                            .withCaseSensitivity(false)
-                            .let { base ->
-                                if (signatures.isEmpty()) {
-                                    val withTail = if (instructionSignatures.isEmpty()) {
-                                        base
-                                    } else {
-                                        base.withTailText(instructionSignatures.joinToString(" | ") { " $it" }, true)
-                                    }
-                                    withTail.withInsertHandler(SpaceInsertHandler(formattedName))
-                                } else {
-                                    val withTail = base.withTailText(
-                                        signatures.joinToString(" | ") { " ${it.presentation.substringAfter(it.name)}" },
-                                        true
-                                    )
-                                    if (AmosFunctionRegistry.requiresParentheses(command.name, project)) {
-                                        withTail.withInsertHandler(FunctionParensInsertHandler(formattedName))
-                                    } else {
-                                        withTail.withInsertHandler(SpaceInsertHandler(formattedName))
-                                    }
-                                }
-                            }
-                        result.addElement(builder)
-                        seenDefinitions += command.name.uppercase(Locale.ROOT)
-                    }
-
                     AmosDefinitionRegistry.definitions(project)
-                        .filter { it.uppercaseName !in seenDefinitions }
                         .forEach { definition ->
                             if (expectedType != null && definition.kind == AmosDefinitionKind.FUNCTION) {
                                 val returnType = definition.returnType
