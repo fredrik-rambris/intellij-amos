@@ -151,4 +151,18 @@ class AmosFormattingTest {
         val result = AmosCodeStyleFormatter.format(source)
         assertEquals("Print X\nPrint Y", result)
     }
+
+    @Test
+    fun formatterKeepsLogicalOperatorsLowercase() {
+        val source = "if x=1 and y=2 or z=3"
+        val result = AmosCodeStyleFormatter.format(source)
+        assertEquals("If X=1 and Y=2 or Z=3", result)
+    }
+
+    @Test
+    fun formatterKeepsLineStringVariableUppercase() {
+        val source = "line$=line$+\"!\""
+        val result = AmosCodeStyleFormatter.format(source)
+        assertEquals("LINE$=LINE$+\"!\"", result)
+    }
 }

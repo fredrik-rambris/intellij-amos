@@ -7,6 +7,7 @@ import java.util.Locale
 object AmosCodeStyleFormatter {
     private const val blockIndentSize = AmosStatementSupport.blockIndentSize
     private const val inlineIfStatement = "IF INLINE"
+    private val lowerCaseLogicalOperators = setOf("AND", "OR")
 
     private val openingStatements = AmosStatementSupport.openingKeys
     private val closingStatements = AmosStatementSupport.closingKeys
@@ -51,7 +52,13 @@ object AmosCodeStyleFormatter {
 
             val replacement = when (tokenType) {
                 AmosTokenTypes.keyword -> {
-                    if (previousWordUpper == "PROCEDURE" || inProcedureCallList) {
+                    val tokenUpper = tokenText.uppercase(Locale.ROOT)
+                    if (tokenUpper in lowerCaseLogicalOperators) {
+                        tokenText.lowercase(Locale.ROOT)
+                    } else if ((tokenUpper.endsWith("$") || tokenUpper.endsWith("#")) && !isFunctionCallLike(source, lexer.tokenEnd)) {
+                        // Avoid turning typed variable names like LINE$ into command-style camel case.
+                        tokenText.uppercase(Locale.ROOT)
+                    } else if (previousWordUpper == "PROCEDURE" || inProcedureCallList) {
                         tokenText.uppercase(Locale.ROOT)
                     } else {
                         tokenText.toAmosCamelCase()
@@ -274,6 +281,14 @@ object AmosCodeStyleFormatter {
             source.contains('\r') -> "\r"
             else -> "\n"
         }
+    }
+
+    private fun isFunctionCallLike(source: String, offset: Int): Boolean {
+        var i = offset
+        while (i < source.length && (source[i] == ' ' || source[i] == '\t')) {
+            i++
+        }
+        return i < source.length && source[i] == '('
     }
 
     private fun String.toAmosCamelCase(): String {
