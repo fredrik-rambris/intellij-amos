@@ -5,16 +5,15 @@
 
     <!-- Public plugin name should be written in Title Case.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-name -->
-    <name>Amiga-amos</name>
+    <name>AMOS</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
-    <vendor url="https://www.yourcompany.com">YourCompany</vendor>
+    <vendor url="https://fredrik.rambris.com">Fredrik Rambris</vendor>
 
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-description -->
     <description><![CDATA[
-        Enter short description for your plugin here.<br>
-        <em>most HTML tags may be used</em>
+        Adds support for the AMOS Basic language used in AMOS Professional on the Amiga Computer
     ]]></description>
 
     <!-- Product and plugin compatibility requirements.
@@ -35,11 +34,21 @@
                 language="AMOS"
                 implementationClass="dev.rambris.amigaamos.lang.AmosFileType"
                 fieldName="INSTANCE"
-                extensions="asc"/>
+                extensions="asc;amosasc;amosbas"/>
         <lang.syntaxHighlighterFactory
                 language="AMOS"
                 implementationClass="dev.rambris.amigaamos.lang.AmosSyntaxHighlighterFactory"/>
         <colorSettingsPage implementation="dev.rambris.amigaamos.lang.AmosColorSettingsPage"/>
+        <projectConfigurable
+                id="settings.amos"
+                parentId="language"
+                displayName="AMOS"
+                instance="dev.rambris.amigaamos.lang.AmosProjectConfigurable"/>
+        <projectConfigurable
+                id="settings.amos.definitions"
+                parentId="settings.amos"
+                displayName="Definitions"
+                instance="dev.rambris.amigaamos.lang.AmosDefinitionProjectConfigurable"/>
         <lang.parserDefinition
                 language="AMOS"
                 implementationClass="dev.rambris.amigaamos.lang.AmosParserDefinition"/>

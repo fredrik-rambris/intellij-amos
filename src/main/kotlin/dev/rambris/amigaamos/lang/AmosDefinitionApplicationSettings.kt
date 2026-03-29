@@ -7,10 +7,10 @@ import com.intellij.openapi.components.Storage
 import com.intellij.openapi.util.SimpleModificationTracker
 import java.util.Locale
 
-@Service(Service.Level.PROJECT)
-@State(name = "AmosDefinitionProjectSettings", storages = [Storage("amiga-amos.xml")])
-class AmosDefinitionProjectSettings :
-    PersistentStateComponent<AmosDefinitionProjectSettings.State>,
+@Service(Service.Level.APP)
+@State(name = "AmosDefinitionApplicationSettings", storages = [Storage("amiga-amos.xml")])
+class AmosDefinitionApplicationSettings :
+    PersistentStateComponent<AmosDefinitionApplicationSettings.State>,
     SimpleModificationTracker() {
 
     data class State(
@@ -45,10 +45,6 @@ class AmosDefinitionProjectSettings :
         return additionalSourceReferences().mapNotNull { reference ->
             AmosDefinitionSourceReferences.toSource(reference)?.let { source -> reference to source }
         }
-    }
-
-    fun additionalDefinitionSources(): List<AmosDefinitionSource> {
-        return additionalDefinitionSourceEntries().map { it.second }
     }
 
     fun update(additionalSources: List<String>, disabledExtensionIds: Set<String>) {
