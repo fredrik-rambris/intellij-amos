@@ -11,6 +11,8 @@ import java.util.Locale
 class AmosSetBufferPositionInspection : LocalInspectionTool() {
     override fun getDisplayName(): String = "Set Buffer should be first instruction"
 
+    override fun getGroupDisplayName(): String = "AMOS"
+
     override fun getShortName(): String = "AmosSetBufferPosition"
 
     override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<ProblemDescriptor>? {

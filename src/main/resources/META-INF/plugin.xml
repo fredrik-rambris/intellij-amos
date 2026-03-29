@@ -39,6 +39,7 @@
         <lang.syntaxHighlighterFactory
                 language="AMOS"
                 implementationClass="dev.rambris.amigaamos.lang.AmosSyntaxHighlighterFactory"/>
+        <colorSettingsPage implementation="dev.rambris.amigaamos.lang.AmosColorSettingsPage"/>
         <lang.parserDefinition
                 language="AMOS"
                 implementationClass="dev.rambris.amigaamos.lang.AmosParserDefinition"/>
@@ -84,6 +85,7 @@
                 language="AMOS"
                 shortName="AmosSetBufferPosition"
                 displayName="Set Buffer should be first instruction"
+                groupName="AMOS"
                 groupPath="AMOS"
                 enabledByDefault="true"
                 level="WARNING"
