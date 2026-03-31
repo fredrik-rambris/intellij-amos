@@ -12,7 +12,7 @@
   - `.amosasc`
   - `.amosbas`
 - File type registration lives in `src/main/resources/META-INF/plugin.xml`.
-- Extra detection lives in `src/main/kotlin/dev/rambris/amigaamos/lang/AmosFileTypeOverrider.kt`.
+- Extra detection lives in `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosFileTypeOverrider.kt`.
 
 ## Current Plugin Surface
 The plugin currently wires the following in `plugin.xml`:
@@ -55,18 +55,18 @@ The plugin currently wires the following in `plugin.xml`:
 Definitions are JSON-driven and loaded at runtime by the registry.
 
 ### Key Files
-- Registry: `src/main/kotlin/dev/rambris/amigaamos/lang/AmosDefinitionRegistry.kt`
-- Models: `src/main/kotlin/dev/rambris/amigaamos/lang/AmosDefinitionModels.kt`
-- Source reference parsing: `src/main/kotlin/dev/rambris/amigaamos/lang/AmosDefinitionSourceReferences.kt`
-- App-level settings: `src/main/kotlin/dev/rambris/amigaamos/lang/AmosDefinitionApplicationSettings.kt`
-- Project-level settings: `src/main/kotlin/dev/rambris/amigaamos/lang/AmosDefinitionProjectSettings.kt`
-- Project settings UI: `src/main/kotlin/dev/rambris/amigaamos/lang/AmosDefinitionProjectConfigurable.kt`
-- Extension point bean: `src/main/kotlin/dev/rambris/amigaamos/lang/AmosDefinitionResourceBean.kt`
+- Registry: `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosDefinitionRegistry.kt`
+- Models: `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosDefinitionModels.kt`
+- Source reference parsing: `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosDefinitionSourceReferences.kt`
+- App-level settings: `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosDefinitionApplicationSettings.kt`
+- Project-level settings: `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosDefinitionProjectSettings.kt`
+- Project settings UI: `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosDefinitionProjectConfigurable.kt`
+- Extension point bean: `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosDefinitionResourceBean.kt`
 
 ### Important Architectural Notes
 - The AMOS manual is **not** required to build the plugin.
 - `commands.tsv` is no longer used as the runtime/build-time source of command vocabulary.
-- Lexer keyword vocabulary is derived from JSON definitions plus a very small hardcoded short-keyword set in `src/main/kotlin/dev/rambris/amigaamos/lang/AmosCommandIndex.kt`.
+- Lexer keyword vocabulary is derived from JSON definitions plus a very small hardcoded short-keyword set in `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosCommandIndex.kt`.
 - Definition files are merged by `(uppercaseName, kind)`.
 - Structures are still code-owned; extension JSON is for functions/instructions/metadata.
 
@@ -139,11 +139,11 @@ User-expected formatting currently targets:
 - Extra blank lines at EOF are removed.
 
 Primary formatter files:
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosFormattingModelBuilder.kt`
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosPostFormatProcessor.kt`
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosLineIndentProvider.kt`
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosEnterHandlerDelegate.kt`
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosCodeStyleFormatter.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosFormattingModelBuilder.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosPostFormatProcessor.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosLineIndentProvider.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosEnterHandlerDelegate.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosCodeStyleFormatter.kt`
 
 ### Enter Handling
 Pressing Enter currently:
@@ -168,12 +168,12 @@ Examples:
 - Selecting function completions inserts the formatted name and, when required, parentheses with the caret placed inside.
 
 Key files:
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosCompletionContributor.kt`
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosCompletionConfidence.kt`
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosTypedHandler.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosCompletionContributor.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosCompletionConfidence.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosTypedHandler.kt`
 
 ## String-Chain Support
-Implemented in `src/main/kotlin/dev/rambris/amigaamos/lang/AmosStringChainSupport.kt`.
+Implemented in `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosStringChainSupport.kt`.
 
 Current supported pattern:
 ```amos
@@ -234,17 +234,17 @@ There is also an explicit `runIde` JVM workaround in `build.gradle.kts`:
 
 ## Verification / Regression Tests
 Relevant test files:
-- `src/test/kotlin/dev/rambris/amigaamos/lang/AmosLexerTest.kt`
-- `src/test/kotlin/dev/rambris/amigaamos/lang/AmosParserStructureTest.kt`
-- `src/test/kotlin/dev/rambris/amigaamos/lang/AmosCompletionContributorTest.kt`
-- `src/test/kotlin/dev/rambris/amigaamos/lang/AmosDocumentationProviderTest.kt`
-- `src/test/kotlin/dev/rambris/amigaamos/lang/AmosReferenceContributorTest.kt`
-- `src/test/kotlin/dev/rambris/amigaamos/lang/AmosRenameSupportTest.kt`
-- `src/test/kotlin/dev/rambris/amigaamos/lang/AmosFoldingBuilderTest.kt`
-- `src/test/kotlin/dev/rambris/amigaamos/lang/AmosFormattingTest.kt`
-- `src/test/kotlin/dev/rambris/amigaamos/lang/AmosEnterHandlerDelegateTest.kt`
-- `src/test/kotlin/dev/rambris/amigaamos/lang/AmosStringChainSupportTest.kt`
-- `src/test/kotlin/dev/rambris/amigaamos/lang/AmosDefinitionRegistryTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosLexerTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosParserStructureTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosCompletionContributorTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosDocumentationProviderTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosReferenceContributorTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosRenameSupportTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosFoldingBuilderTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosFormattingTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosEnterHandlerDelegateTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosStringChainSupportTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosDefinitionRegistryTest.kt`
 
 Quick verification:
 

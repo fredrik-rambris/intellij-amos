@@ -23,7 +23,7 @@
     <extensionPoints>
         <extensionPoint
                 qualifiedName="dev.rambris.amigaamos.definitionResource"
-                beanClass="dev.rambris.amigaamos.lang.AmosDefinitionResourceBean"
+                beanClass="dev.rambris.amigaamos.lang.amos.AmosDefinitionResourceBean"
                 dynamic="true"/>
     </extensionPoints>
 
@@ -32,65 +32,78 @@
         <fileType
                 name="AMOS File"
                 language="AMOS"
-                implementationClass="dev.rambris.amigaamos.lang.AmosFileType"
+                implementationClass="dev.rambris.amigaamos.lang.amos.AmosFileType"
                 fieldName="INSTANCE"
                 extensions="asc;amosasc;amosbas"/>
-        <fileTypeDetector implementation="dev.rambris.amigaamos.lang.AmosFileTypeOverrider"/>
+        <fileTypeDetector implementation="dev.rambris.amigaamos.lang.amos.AmosFileTypeOverrider"/>
+        <fileType
+                name="AMAL File"
+                language="AMAL"
+                implementationClass="dev.rambris.amigaamos.lang.amal.AmalFileType"
+                fieldName="INSTANCE"
+                extensions="amal"/>
+        <fileType
+                name="AMOS Interface File"
+                language="AMUI"
+                implementationClass="dev.rambris.amigaamos.lang.amui.AmuiFileType"
+                fieldName="INSTANCE"
+                extensions="amui"/>
+
         <lang.syntaxHighlighterFactory
                 language="AMOS"
-                implementationClass="dev.rambris.amigaamos.lang.AmosSyntaxHighlighterFactory"/>
-        <colorSettingsPage implementation="dev.rambris.amigaamos.lang.AmosColorSettingsPage"/>
+                implementationClass="dev.rambris.amigaamos.lang.amos.AmosSyntaxHighlighterFactory"/>
+        <colorSettingsPage implementation="dev.rambris.amigaamos.lang.amos.AmosColorSettingsPage"/>
         <projectConfigurable
                 id="settings.amos"
                 parentId="language"
                 displayName="AMOS"
-                instance="dev.rambris.amigaamos.lang.AmosProjectConfigurable"/>
+                instance="dev.rambris.amigaamos.lang.amos.AmosProjectConfigurable"/>
         <projectConfigurable
                 id="settings.amos.definitions"
                 parentId="settings.amos"
                 displayName="Definitions"
-                instance="dev.rambris.amigaamos.lang.AmosDefinitionProjectConfigurable"/>
+                instance="dev.rambris.amigaamos.lang.amos.AmosDefinitionProjectConfigurable"/>
         <lang.parserDefinition
                 language="AMOS"
-                implementationClass="dev.rambris.amigaamos.lang.AmosParserDefinition"/>
+                implementationClass="dev.rambris.amigaamos.lang.amos.AmosParserDefinition"/>
         <annotator
                 language="AMOS"
-                implementationClass="dev.rambris.amigaamos.lang.AmosProcedureNameAnnotator"/>
+                implementationClass="dev.rambris.amigaamos.lang.amos.AmosProcedureNameAnnotator"/>
         <lang.formatter
                 language="AMOS"
-                implementationClass="dev.rambris.amigaamos.lang.AmosFormattingModelBuilder"/>
+                implementationClass="dev.rambris.amigaamos.lang.amos.AmosFormattingModelBuilder"/>
         <lang.lineIndentProvider
                 language="AMOS"
-                implementationClass="dev.rambris.amigaamos.lang.AmosLineIndentProvider"/>
+                implementationClass="dev.rambris.amigaamos.lang.amos.AmosLineIndentProvider"/>
         <lang.foldingBuilder
                 language="AMOS"
-                implementationClass="dev.rambris.amigaamos.lang.AmosFoldingBuilder"/>
+                implementationClass="dev.rambris.amigaamos.lang.amos.AmosFoldingBuilder"/>
         <completion.contributor
                 language="AMOS"
-                implementationClass="dev.rambris.amigaamos.lang.AmosCompletionContributor"/>
+                implementationClass="dev.rambris.amigaamos.lang.amos.AmosCompletionContributor"/>
         <completion.confidence
                 language="AMOS"
-                implementationClass="dev.rambris.amigaamos.lang.AmosCompletionConfidence"
+                implementationClass="dev.rambris.amigaamos.lang.amos.AmosCompletionConfidence"
                 order="first"/>
         <gotoDeclarationHandler
-                implementation="dev.rambris.amigaamos.lang.AmosGotoDeclarationHandler"/>
+                implementation="dev.rambris.amigaamos.lang.amos.AmosGotoDeclarationHandler"/>
         <renameHandler
-                implementation="dev.rambris.amigaamos.lang.AmosRenameHandler"/>
+                implementation="dev.rambris.amigaamos.lang.amos.AmosRenameHandler"/>
         <lang.findUsagesProvider
                 language="AMOS"
-                implementationClass="dev.rambris.amigaamos.lang.AmosFindUsagesProvider"/>
+                implementationClass="dev.rambris.amigaamos.lang.amos.AmosFindUsagesProvider"/>
         <codeInsight.parameterInfo
                 language="AMOS"
-                implementationClass="dev.rambris.amigaamos.lang.AmosParameterInfoHandler"/>
+                implementationClass="dev.rambris.amigaamos.lang.amos.AmosParameterInfoHandler"/>
         <lang.documentationProvider
                 language="AMOS"
-                implementationClass="dev.rambris.amigaamos.lang.AmosDocumentationProvider"/>
+                implementationClass="dev.rambris.amigaamos.lang.amos.AmosDocumentationProvider"/>
         <documentationProvider
-                implementation="dev.rambris.amigaamos.lang.AmosDocumentationProvider"/>
-        <typedHandler implementationClass="dev.rambris.amigaamos.lang.AmosTypedHandler"/>
+                implementation="dev.rambris.amigaamos.lang.amos.AmosDocumentationProvider"/>
+        <typedHandler implementationClass="dev.rambris.amigaamos.lang.amos.AmosTypedHandler"/>
         <lang.commenter
                 language="AMOS"
-                implementationClass="dev.rambris.amigaamos.lang.AmosCommenter"/>
+                implementationClass="dev.rambris.amigaamos.lang.amos.AmosCommenter"/>
         <localInspection
                 language="AMOS"
                 shortName="AmosSetBufferPosition"
@@ -99,10 +112,10 @@
                 groupPath="AMOS"
                 enabledByDefault="true"
                 level="WARNING"
-                implementationClass="dev.rambris.amigaamos.lang.AmosSetBufferPositionInspection"/>
-        <postFormatProcessor implementation="dev.rambris.amigaamos.lang.AmosPostFormatProcessor"/>
+                implementationClass="dev.rambris.amigaamos.lang.amos.AmosSetBufferPositionInspection"/>
+        <postFormatProcessor implementation="dev.rambris.amigaamos.lang.amos.AmosPostFormatProcessor"/>
         <enterHandlerDelegate
-                implementation="dev.rambris.amigaamos.lang.AmosEnterHandlerDelegate"/>
+                implementation="dev.rambris.amigaamos.lang.amos.AmosEnterHandlerDelegate"/>
     </extensions>
     <extensions defaultExtensionNs="dev.rambris.amigaamos">
         <definitionResource resourcePath="amos/definitions/core.json"/>

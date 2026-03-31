@@ -59,12 +59,12 @@ AMOS callable knowledge is JSON-driven and loaded at runtime.
 
 Key files:
 
-- Registry: `src/main/kotlin/dev/rambris/amigaamos/lang/AmosDefinitionRegistry.kt`
-- Models: `src/main/kotlin/dev/rambris/amigaamos/lang/AmosDefinitionModels.kt`
-- Source reference parsing: `src/main/kotlin/dev/rambris/amigaamos/lang/AmosDefinitionSourceReferences.kt`
-- App-level settings: `src/main/kotlin/dev/rambris/amigaamos/lang/AmosDefinitionApplicationSettings.kt`
-- Project-level settings: `src/main/kotlin/dev/rambris/amigaamos/lang/AmosDefinitionProjectSettings.kt`
-- Settings UI: `src/main/kotlin/dev/rambris/amigaamos/lang/AmosDefinitionProjectConfigurable.kt`
+- Registry: `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosDefinitionRegistry.kt`
+- Models: `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosDefinitionModels.kt`
+- Source reference parsing: `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosDefinitionSourceReferences.kt`
+- App-level settings: `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosDefinitionApplicationSettings.kt`
+- Project-level settings: `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosDefinitionProjectSettings.kt`
+- Settings UI: `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosDefinitionProjectConfigurable.kt`
 
 Important notes:
 
@@ -133,11 +133,11 @@ Current formatting targets include:
 
 Primary formatter files:
 
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosFormattingModelBuilder.kt`
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosPostFormatProcessor.kt`
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosLineIndentProvider.kt`
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosEnterHandlerDelegate.kt`
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosCodeStyleFormatter.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosFormattingModelBuilder.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosPostFormatProcessor.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosLineIndentProvider.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosEnterHandlerDelegate.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosCodeStyleFormatter.kt`
 
 ## Completion behavior notes
 
@@ -150,9 +150,9 @@ Primary formatter files:
 
 Key files:
 
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosCompletionContributor.kt`
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosCompletionConfidence.kt`
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosTypedHandler.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosCompletionContributor.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosCompletionConfidence.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosTypedHandler.kt`
 
 ## String-chain support
 
@@ -173,7 +173,7 @@ Current behavior:
 
 Implementation file:
 
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosStringChainSupport.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosStringChainSupport.kt`
 
 ## Build and development
 
@@ -236,25 +236,25 @@ rm -rf .gradle/configuration-cache
 ## Useful source files
 
 - `src/main/resources/META-INF/plugin.xml`
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosLexer.kt`
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosParser.kt`
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosSyntaxHighlighter.kt`
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosCompletionContributor.kt`
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosDocumentationProvider.kt`
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosCodeStyleFormatter.kt`
-- `src/main/kotlin/dev/rambris/amigaamos/lang/AmosDefinitionProjectConfigurable.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosLexer.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosParser.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosSyntaxHighlighter.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosCompletionContributor.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosDocumentationProvider.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosCodeStyleFormatter.kt`
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosDefinitionProjectConfigurable.kt`
 
 ## Relevant tests
 
-- `src/test/kotlin/dev/rambris/amigaamos/lang/AmosLexerTest.kt`
-- `src/test/kotlin/dev/rambris/amigaamos/lang/AmosParserStructureTest.kt`
-- `src/test/kotlin/dev/rambris/amigaamos/lang/AmosCompletionContributorTest.kt`
-- `src/test/kotlin/dev/rambris/amigaamos/lang/AmosDocumentationProviderTest.kt`
-- `src/test/kotlin/dev/rambris/amigaamos/lang/AmosReferenceContributorTest.kt`
-- `src/test/kotlin/dev/rambris/amigaamos/lang/AmosRenameSupportTest.kt`
-- `src/test/kotlin/dev/rambris/amigaamos/lang/AmosFoldingBuilderTest.kt`
-- `src/test/kotlin/dev/rambris/amigaamos/lang/AmosFormattingTest.kt`
-- `src/test/kotlin/dev/rambris/amigaamos/lang/AmosEnterHandlerDelegateTest.kt`
-- `src/test/kotlin/dev/rambris/amigaamos/lang/AmosStringChainSupportTest.kt`
-- `src/test/kotlin/dev/rambris/amigaamos/lang/AmosDefinitionRegistryTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosLexerTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosParserStructureTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosCompletionContributorTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosDocumentationProviderTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosReferenceContributorTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosRenameSupportTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosFoldingBuilderTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosFormattingTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosEnterHandlerDelegateTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosStringChainSupportTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosDefinitionRegistryTest.kt`
 
