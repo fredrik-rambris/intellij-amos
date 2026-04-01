@@ -6,43 +6,42 @@
 - `.amos` tokenized binary bundles are still intentionally unsupported.
 
 ## Current File / Language Scope
+
+### AMOS (`.asc` / `.amosasc` / `.amosbas`)
 - Language id: `AMOS`.
-- Registered file extensions:
-  - `.asc` (primary / canonical workflow)
-  - `.amosasc`
-  - `.amosbas`
+- Registered file extensions: `.asc` (primary), `.amosasc`, `.amosbas`.
 - File type registration lives in `src/main/resources/META-INF/plugin.xml`.
 - Extra detection lives in `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosFileTypeOverrider.kt`.
 
+### AMAL (`.amal`)
+- Language id: `AMAL`.
+- File extension: `.amal`.
+- AMAL is the AMOS Animation Language — a compact sub-language embedded in AMOS strings or memory banks.
+- The AMAL language is **not** dynamically extensible; its ~50 instructions/functions are defined directly in Kotlin code.
+- Key package: `src/main/kotlin/dev/rambris/amigaamos/lang/amal/`.
+
+### AMOS Interface (`.amui`)
+- Language id: `AMUI`.
+- File extension: `.amui`.
+- Scaffolding only — no parser or highlighter yet.
+- Key package: `src/main/kotlin/dev/rambris/amigaamos/lang/amui/`.
+
 ## Current Plugin Surface
 The plugin currently wires the following in `plugin.xml`:
-- file type + detector
-- syntax highlighter
-- color settings page
-- project settings pages
-- parser definition
-- annotator for procedure-name highlighting
-- formatter + post-format processor
-- line indent provider
-- folding builder
-- completion contributor + completion confidence
-- goto declaration / rename / find usages
-- parameter info
-- documentation provider
-- typed handler
-- commenter
-- enter handler delegate
-- `Set Buffer should be first instruction` inspection
+
+**AMOS:** file type + detector, syntax highlighter, color settings page, project settings pages, parser definition, annotator (procedure names), formatter + post-format processor, line indent provider, folding builder, completion contributor + confidence, goto declaration / rename / find usages, parameter info, documentation provider, typed handler, commenter, enter handler delegate, inspection.
+
+**AMAL:** file type, syntax highlighter, color settings page, documentation provider.
+
+**AMUI:** file type only.
 
 ## What Is Implemented
+
+### AMOS
 - Lexer/parser for AMOS statements and blocks.
 - Syntax highlighting for keywords, commands, variables, labels, strings, numbers, operators, comments, commas, parentheses, bad chars.
 - Color settings page under `Settings > Editor > Color Scheme > AMOS`.
-- Completion with:
-  - high-confidence autopopup only
-  - typed filtering for many value contexts
-  - explicit keyword completion where a signature requires keywords such as `To`
-  - smart insertion for instructions/functions
+- Completion with high-confidence autopopup, typed filtering, explicit keyword completion (e.g. `To`), smart insertion.
 - Parameter info (`Ctrl-P`) from JSON definitions/signatures.
 - Quick documentation (`Ctrl-Q`) with manual deep links stored directly in definition JSON.
 - Goto declaration, find usages, and rename for procedures, labels, and variables.
@@ -51,7 +50,50 @@ The plugin currently wires the following in `plugin.xml`:
 - String-chain support for patterns like `A$=A$+"..."` including folding and continuation helpers.
 - Definitions management UI for bundled, global, and project-local definition sources.
 
-## Definition System (Important)
+### AMAL
+- Lexer with canonical-case significance model.
+- Syntax highlighting with dedicated color settings page under `Settings > Editor > Color Scheme > AMAL`.
+- Quick documentation (`Ctrl-Q`) from a built-in Kotlin catalog covering all instructions/functions with manual deep links.
+
+#### Token types
+| Token | Meaning |
+|---|---|
+| `KEYWORD` | Significant uppercase letters (`P` in `Pause`, `YM` in `YMouse`) |
+| `KEYWORD_CONTINUATION` | Matching canonical lowercase continuation (`ause`, `ouse`) |
+| `IGNORED_TEXT` | Non-matching lowercase outside strings — comment-colored |
+| `REGISTER` | AMAL registers (`R0`–`R9`, `RA`–`RZ`, `X`, `Y`, `A`) |
+| `LABEL` | Single uppercase letter + colon label definitions |
+| `IDENTIFIER` | First letter of label references and jump targets |
+| `STRING`, `NUMBER`, `OPERATOR`, `SEPARATOR`, `PAREN`, `BAD_CHARACTER` | As described |
+
+#### Compact form splitting (examples)
+- `PJLinguini` → `P` (Pause keyword), `J` (Jump keyword), `L` (label identifier), `inguini` (ignored text).
+- `JS` / `JL` → `J` (keyword) + `S`/`L` (label identifier), even in expression context after `If`.
+
+#### Canonical significance rules (manual spellings only)
+- `Move` → `M` keyword + `ove` continuation.
+- `eXit` → `e` ignored + `X` keyword + `it` continuation.
+- `AUtotest` → `AU` keyword + `totest` continuation.
+- `PLay` → `PL` keyword + `ay` continuation.
+- `YMouse` → `YM` keyword + `ouse` continuation.
+- Non-canonical suffixes (e.g. `YMonkey`) → `YM` keyword + `onkey` ignored.
+
+#### Key AMAL semantic rules
+- Statements are separated by **semicolons (`;`)**, **not colons**.
+- Colons are used **exclusively** for label definitions (`L:`, `S:`, `Target:`).
+- Only the **first capital letter** of a label name is significant — `Loop:` and `L:` define the same label.
+- Using `:` as a statement separator instead of `;` generates a "duplicate label" runtime error in AMAL.
+
+### AMAL Key Files
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amal/AmalVocabulary.kt` — instruction/function/register sets, canonical matching helpers.
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amal/AmalLexer.kt` — lexer with compact form and significance splitting.
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amal/AmalTokenType.kt` — AMAL-specific token types.
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amal/AmalSyntaxHighlighter.kt` — token-to-color mapping.
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amal/AmalColorSettingsPage.kt` — color settings page.
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amal/AmalDocumentationCatalog.kt` — in-code doc catalog with aliases and links.
+- `src/main/kotlin/dev/rambris/amigaamos/lang/amal/AmalDocumentationProvider.kt` — quickdoc, caret-position aware.
+
+## Definition System (Important — AMOS only)
 Definitions are JSON-driven and loaded at runtime by the registry.
 
 ### Key Files
@@ -69,6 +111,7 @@ Definitions are JSON-driven and loaded at runtime by the registry.
 - Lexer keyword vocabulary is derived from JSON definitions plus a very small hardcoded short-keyword set in `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosCommandIndex.kt`.
 - Definition files are merged by `(uppercaseName, kind)`.
 - Structures are still code-owned; extension JSON is for functions/instructions/metadata.
+- AMAL has **no** JSON-based definition registry; its vocabulary is hardcoded in Kotlin.
 
 ### Bundled Definition Files
 - `src/main/resources/amos/definitions/core.json`
@@ -92,42 +135,35 @@ Definitions are JSON-driven and loaded at runtime by the registry.
 ```
 
 ## Definition Settings UI
-Location:
-- `Settings > Languages & Frameworks > AMOS > Definitions`
+Location: `Settings > Languages & Frameworks > AMOS > Definitions`
 
 Behavior:
-- Two separate lists:
-  - global definition sources
-  - project definition sources
+- Two separate lists: global definition sources and project definition sources.
 - Bundled definitions appear in the global section.
 - Core is always enabled and cannot be removed.
 - Bundled extension definitions can be disabled but not removed.
 - External definition files can be added via path/URI and removed from their respective list.
 - Global and project sources are persisted separately.
-- Rows are sorted by:
-  1. core first
-  2. slot number
-  3. extension/display name
-- There is an info column that shows extension metadata (id, slot, filename, vendor, version, parse error).
+- Rows are sorted: core first, then slot, then extension/display name.
+- Info column shows extension metadata (id, slot, filename, vendor, version, parse error).
 - Apply is blocked if multiple enabled extensions claim the same slot.
 
 ## Coverage State (High Level)
-Definitions currently cover:
+
+### AMOS definitions
 - Core/manual progression through chapter `13-01`.
 - Selected appendices: `A`, `B`, `C`, `F`.
-- Chapter 8 music commands are split by ownership:
-  - `08-01`, `08-02`, `08-03` music-related extension material lives in `music.json`.
-- Chapter 10 / 11 extension ownership split:
-  - `ioports.json`: printer / serial / parallel port commands.
-  - `request.json`: Request extension commands.
-- Compact extension commands live in `compact.json`.
+- `music.json`: chapters 08-01, 08-02, 08-03 (Music extension).
+- `ioports.json`: printer / serial / parallel port commands (chapters 10-03–10-05).
+- `request.json`: Request extension commands.
+- `compact.json`: Picture compactor extension commands.
 
-Important caveats:
-- The AMAL **control commands/functions** are defined, but the AMAL sub-language itself is **not** lexed/parsed as AMAL source.
+### Important caveats
+- AMAL language is now fully lexed/highlighted/documented in standalone `.amal` files.
+- AMAL **embedded in AMOS strings** is not lexed — stored as plain strings in AMOS source.
 - Chapter 9 interface/dialog/resource AMOS-facing commands are defined, but the interface sub-language itself is **not** parsed.
 
-## Formatting / Reformat Behavior
-User-expected formatting currently targets:
+## Formatting / Reformat Behavior (AMOS)
 - Variables uppercased.
 - Procedure names uppercased.
 - Instructions / functions / structure keywords in AMOS-style Camel Case from definitions.
@@ -146,26 +182,22 @@ Primary formatter files:
 - `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosCodeStyleFormatter.kt`
 
 ### Enter Handling
-Pressing Enter currently:
-- formats the line being left
-- computes indent for the new line
-- de-indents closers like `Next`, `Wend`, `Loop`, `End Proc`, etc.
-- auto-inserts matching closing lines for supported blocks
+- Formats the line being left; computes indent for new line.
+- De-indents closers (`Next`, `Wend`, `Loop`, `End Proc`, etc.).
+- Auto-inserts matching closing lines for supported blocks:
+  - `For X=1 To 100` → inserts indented body line and `Next X`
+  - `Procedure TEST` → inserts indented body line and `End Proc`
+  - `Repeat` → inserts indented body line and `Until `
 
-Examples:
-- `For X=1 To 100` → inserts indented body line and `Next X`
-- `Procedure TEST` → inserts indented body line and `End Proc`
-- `Repeat` → inserts indented body line and `Until `
-
-## Completion Behavior Notes
+## Completion Behavior Notes (AMOS)
 - Autopopup is intentionally conservative.
 - No autopopup in comments, strings, literals, operators, punctuation, or whitespace.
-- At the start of a statement, popup is allowed only after enough confidence (for example 2+ chars).
+- At the start of a statement, popup is allowed only after enough confidence (2+ chars).
 - In typed value contexts, popup is narrower and type-aware.
 - When only a required keyword is valid, broad popup is suppressed.
 - Typing space where the next required keyword is `To` auto-expands to ` To `.
 - Selecting instruction/procedure completions inserts formatted casing plus trailing space.
-- Selecting function completions inserts the formatted name and, when required, parentheses with the caret placed inside.
+- Selecting function completions inserts the formatted name and parentheses with caret inside.
 
 Key files:
 - `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosCompletionContributor.kt`
@@ -175,23 +207,20 @@ Key files:
 ## String-Chain Support
 Implemented in `src/main/kotlin/dev/rambris/amigaamos/lang/amos/AmosStringChainSupport.kt`.
 
-Current supported pattern:
 ```amos
 Q$="First"
 Q$=Q$+"Second"
 Q$=Q$+"Third"
 ```
 
-Notes:
-- Blank lines between chain parts are tolerated.
-- `Rem` and `'` comment lines between parts are tolerated.
+- Blank lines and `Rem`/`'` comments between parts are tolerated.
 - Chain folding is implemented.
-- Tab on an empty continuation line can expand a new `Q$=Q$+""` snippet when the caret is at the end of a detected chain context.
+- Tab at chain end expands a new `Q$=Q$+""` snippet.
 
-## Highlighting / Name Resolution Notes
+## Highlighting / Name Resolution Notes (AMOS)
 - Procedure names are uppercased and highlighted via `AmosProcedureNameAnnotator.kt`.
-- Labels are only recognized when they start a statement/line (after optional leading whitespace).
-- Procedure / label / variable references are indexed from source analysis rather than a full PSI grammar for every symbol kind.
+- Labels are only recognized when they start a statement/line.
+- Procedure / label / variable references are indexed from source analysis.
 
 ## Inspection
 - `AmosSetBufferPositionInspection.kt`
@@ -199,8 +228,6 @@ Notes:
 - Current purpose: `Set Buffer should be first instruction`.
 
 ## Build / Packaging
-Useful commands:
-
 ```bash
 cd /home/boost/Data/Coding/amiga-amos
 ./gradlew --no-daemon test
@@ -209,18 +236,14 @@ cd /home/boost/Data/Coding/amiga-amos
 ./gradlew --no-daemon buildPlugin
 ```
 
-Distributable plugin ZIP:
-- `build/distributions/amiga-amos-1.0-SNAPSHOT.zip`
+Distributable plugin ZIP: `build/distributions/amiga-amos-1.1-SNAPSHOT.zip`
 
 ## Known RunIde Pitfall
-A recurring development pitfall has been stale sandbox / cached plugin metadata after extension-point changes.
-
-Typical symptoms:
+Stale sandbox / cached plugin metadata after extension-point changes causes:
 - `implementation class is not specified [Plugin: dev.rambris.amiga-amos]`
 - `IntentionActionWrapper.getImplementationClassName must not return null`
 
-If this reappears, clean sandbox + configuration cache and rerun with tasks forced:
-
+Fix:
 ```bash
 cd /home/boost/Data/Coding/amiga-amos
 ./gradlew --stop
@@ -229,11 +252,11 @@ rm -rf .gradle/configuration-cache
 ./gradlew --no-daemon clean runIde --rerun-tasks --console=plain
 ```
 
-There is also an explicit `runIde` JVM workaround in `build.gradle.kts`:
-- `-Dide.experimental.ui=false`
+`build.gradle.kts` also contains: `-Dide.experimental.ui=false`
 
 ## Verification / Regression Tests
-Relevant test files:
+
+### AMOS tests
 - `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosLexerTest.kt`
 - `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosParserStructureTest.kt`
 - `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosCompletionContributorTest.kt`
@@ -246,27 +269,25 @@ Relevant test files:
 - `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosStringChainSupportTest.kt`
 - `src/test/kotlin/dev/rambris/amigaamos/lang/amos/AmosDefinitionRegistryTest.kt`
 
-Quick verification:
-
-```bash
-cd /home/boost/Data/Coding/amiga-amos
-./gradlew --no-daemon test
-./gradlew --no-daemon runIde
-```
+### AMAL tests
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amal/AmalLexerTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amal/AmalDocumentationProviderTest.kt`
+- `src/test/kotlin/dev/rambris/amigaamos/lang/amal/AmalColorSettingsPageTest.kt`
 
 ## Current User Preferences / Constraints
-- Ask instead of assuming when AMOS semantics are uncertain.
-- Keep extension definitions file-driven and splittable by extension.
-- Prefer runtime-loadable JSON definitions over hardcoded command tables.
+- Ask instead of assuming when AMOS or AMAL semantics are uncertain.
+- Keep AMOS extension definitions file-driven and splittable by extension.
+- AMAL has no JSON registry; vocabulary is hardcoded in Kotlin.
+- Prefer runtime-loadable JSON definitions over hardcoded command tables (AMOS only).
 - Reformat code to the current project style when inserting/editing code.
 - Prefer Java 21 style and `var` when Java is touched.
 - Prefer records for dataclass-like Java structures.
 - Prefer lower case SQL.
 
 ## Suggested Next Work
-1. Extend typed-parameter filtering coverage across more signatures and edge cases.
-2. Add diagnostics for recognized-but-disabled extension commands if not already present / complete.
-3. Continue formatter regression coverage for single-line `if ... then`, colon-heavy lines, and mixed label/separator cases.
-4. Consider future support for parsing AMAL and interface sub-languages as embedded languages.
-5. Continue validating JSON definition links/signatures against the manual chapter by chapter.
-
+1. AMAL completion: inserting full canonical long form (`Jump`, `Pause`, `YMouse`) from suggestion box.
+2. Add diagnostics for recognized-but-disabled AMOS extension commands.
+3. Continue AMOS formatter regression coverage (single-line `if ... then`, colon-heavy lines, mixed label/separator cases).
+4. AMUI (AMOS Interface Language) lexer/parser/highlighter.
+5. Continue validating AMOS JSON definition links/signatures against the manual chapter by chapter.
+6. Consider embedded AMAL language support for AMOS string-chain patterns that contain AMAL programs.
