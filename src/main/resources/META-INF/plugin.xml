@@ -19,6 +19,7 @@
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
 
     <extensionPoints>
         <extensionPoint
@@ -52,10 +53,14 @@
         <lang.syntaxHighlighterFactory
                 language="AMOS"
                 implementationClass="dev.rambris.amigaamos.lang.amos.AmosSyntaxHighlighterFactory"/>
+        <lang.syntaxHighlighterFactory
+                language="AMAL"
+                implementationClass="dev.rambris.amigaamos.lang.amal.AmalSyntaxHighlighterFactory"/>
         <colorSettingsPage implementation="dev.rambris.amigaamos.lang.amos.AmosColorSettingsPage"/>
+        <colorSettingsPage implementation="dev.rambris.amigaamos.lang.amal.AmalColorSettingsPage"/>
         <projectConfigurable
                 id="settings.amos"
-                parentId="language"
+                parentId="languages"
                 displayName="AMOS"
                 instance="dev.rambris.amigaamos.lang.amos.AmosProjectConfigurable"/>
         <projectConfigurable
@@ -98,9 +103,10 @@
         <lang.documentationProvider
                 language="AMOS"
                 implementationClass="dev.rambris.amigaamos.lang.amos.AmosDocumentationProvider"/>
-        <documentationProvider
-                implementation="dev.rambris.amigaamos.lang.amos.AmosDocumentationProvider"/>
-        <typedHandler implementationClass="dev.rambris.amigaamos.lang.amos.AmosTypedHandler"/>
+        <lang.documentationProvider
+                language="AMAL"
+                implementationClass="dev.rambris.amigaamos.lang.amal.AmalDocumentationProvider"/>
+        <typedHandler implementation="dev.rambris.amigaamos.lang.amos.AmosTypedHandler"/>
         <lang.commenter
                 language="AMOS"
                 implementationClass="dev.rambris.amigaamos.lang.amos.AmosCommenter"/>
