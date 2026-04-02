@@ -1,8 +1,6 @@
 package dev.rambris.amigaamos.lang.amal
 
 import com.intellij.psi.tree.IElementType
-import java.nio.file.Files
-import java.nio.file.Path
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -21,7 +19,7 @@ class AmalLexerTest {
 
     @Test
     fun `concatenated AMAL examples keep one letter commands as keywords`() {
-        val source = readSampleFile("/home/boost/Data/Coding/amiga-amos/test/test.amal")
+        val source = readResource("/amal/test.amal")
         val tokens = tokenize(source)
 
         assertTrue(tokens.count { it.first == AmalTokenTypes.keyword && it.second == "L" } > 5)
@@ -192,8 +190,10 @@ Move R0,R1,RZ
         return result
     }
 
-    private fun readSampleFile(path: String): String {
-        return Files.readString(Path.of(path))
+    private fun readResource(path: String): String {
+        val stream = this::class.java.getResourceAsStream(path)
+        requireNotNull(stream) { "Missing test resource: $path" }
+        return stream.bufferedReader(Charsets.UTF_8).use { it.readText() }
     }
 }
 

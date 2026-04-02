@@ -1,0 +1,101 @@
+Label:If RB=1 Jump Image;Let A=11;Let X=XM;Pause Jump Label;Image: Let A=12;Let X=XM;Pause Jump Lable
+
+Anim 0,(9,2)(10,2);LetX=XM;LetY=208;LetRA=1;LetRB=1;Move0,-40,4;LetRB=0;Move0,-160,16;Let RA=0
+
+;LR0=Z(50)+80;FR1=1TR0;P;NR1
+
+A 0,(1,2)(2,2)(3,2)(4,2);L X=330;LY=Z(120)+20;M -360,0,120
+
+A 0,(5,1)(6,1)(7,1)(8,1);L X=-30;LY=Z(120)+20;M 360,0,90
+
+A 0,(1,1)(2,1)(3,1)(4,1);L X=330;LY=Z(80)+95;M -360,-75,90
+
+A 0,(5,3)(6,3)(7,3)(8,3);L X=-30;LY=Z(80)+95;M 360,-75,180
+
+A 0,(1,3)(2,3)(3,3)(4,3);L X=330;LY=Z(110)+65;M -360,-45,180
+
+A 0,(5,2)(6,2)(7,2)(8,2);L X=-30;LY=Z(110)+65;M 360,-45,120
+
+L RZ=0;L X=400;M -230,0,2300;L RZ=1
+
+A 0,(13,6)(14,6)(15,6)(14,6);L X=RX;L Y=RY: L: L Y=Y+2;P;If Y>242 JS JL;S:A0,(17,2)(18,2);FR0=1T75;NR0 LY=300
+
+LA=4;M0,240,20
+
+Anim 0,(5,2)(6,2)(7,2)(8,2);
+
+Loop: Let R0=Z(255)+Z(63)-X; Let R1=Z(127)+Z(63)-Y; Let RZ=Z(15)+4;
+
+Move R0,R1,RZ; Jump Loop
+
+Anim 0,(1,2)(2,2)(3,2)(4,2);
+
+Loop: Let R0=Z(255)+Z(63)-X; Let R1=Z(127)+Z(63)-Y; Let RZ=Z(15)+4;
+
+Move R0,R1,RZ; Jump Loop
+
+Loop:For R0=1 To 5; Pause; Next R0; Pause Jump Loop
+
+Anim 0,(5,2)(6,2)(7,2)(8,2);Move 300,0,150
+
+Anim 0,(1,2)(2,2)(3,2)(4,2);Move -300,0,150
+
+Anim 0,(5,5)(6,5);Loop: Let X=XM-148;If K1 Jump Up;Jump Down;
+
+Up: Let Y=Y-1;If Y<75 Jump A; Pause Jump Loop;A: LetY=75;PJL
+
+Down: Let Y=Y+1;If Y>165 Jump B; Pause Jump Loop;B: LetY=165;PJL
+
+Anim 0,(1,3)(2,3)(3,3)(4,3);Loop: Let X=Z(220)+160;Let Y=40
+
+PLay 1;Pause Jump Loop
+
+Loop: For R0=1 To 150; Let X=R0;Let Y=R0*2;Let A=R0;Next R0;
+
+For R0=1 To 150; Let X=150-R0;Let Y=300-R0;Let A=150-R0;Next R0;
+
+Pause Jump Loop
+
+Loop:Let X=280;Let Y=140;Let R0=Z(6)-3;Let R1=Z(6)-3;
+
+For R9=1 To 40;Let X=X+R0;LY=Y+R1;Next R9;
+
+Pause Jump Loop
+
+Let R0=RA; Let R1=RB
+
+Start:Let X=X+R0;Let Y=Y+R1
+
+If X>413 Jump A;
+
+If Y>215 Jump B;
+
+If X<150 Jump A;
+
+If Y<71  Jump B;
+
+Pause Jump Start
+
+A: If R0>0 Jump C; Let R0=RA; Let X=150; Pause Jump Start
+
+C: Let R0=RB; Let X=413; Pause Jump Start
+
+B: If R1>0 Jump D; Let R1=RA; Let Y=71; Pause Jump Start
+
+D: Let R1=RB; Let Y=215; Pause Jump Start
+
+Loop: Let X=XM;Let Y=YM;Pause Jump Loop
+
+Label: Move142,0,142;Move -142,0,142;Pause Jump Label
+
+Anim 0,(9,2)(10,2);LetRA=1;Move0,-200,25;LetRA=0
+
+Anim 0,(9,2)(10,2);LetR5=1;Move0,-200,50;LetR5=0
+
+Anim 0,(1,4)(2,4)(3,4)(4,4)
+
+Label:
+
+Move -400,0,100;Move 0,-80,5;Move 400,0,5;Move 0,80,5
+
+Jump Label

@@ -129,5 +129,6 @@
         <definitionResource resourcePath="amos/definitions/ioports.json"/>
         <definitionResource resourcePath="amos/definitions/music.json"/>
         <definitionResource resourcePath="amos/definitions/request.json"/>
+        <definitionResource resourcePath="amos/definitions/compiler.json"/>
     </extensions>
 </idea-plugin>

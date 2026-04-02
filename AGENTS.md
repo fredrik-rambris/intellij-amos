@@ -119,6 +119,7 @@ Definitions are JSON-driven and loaded at runtime by the registry.
 - `src/main/resources/amos/definitions/music.json`
 - `src/main/resources/amos/definitions/ioports.json`
 - `src/main/resources/amos/definitions/request.json`
+- `src/main/resources/amos/definitions/compiler.json`
 
 ### Extension Metadata Contract (JSON)
 ```json
@@ -141,9 +142,11 @@ Behavior:
 - Two separate lists: global definition sources and project definition sources.
 - Bundled definitions appear in the global section.
 - Core is always enabled and cannot be removed.
-- Bundled extension definitions can be disabled but not removed.
-- External definition files can be added via path/URI and removed from their respective list.
+- Bundled extension definitions can be disabled but not removed or edited.
+- External definition files are added/edited via file chooser actions.
+- The table uses IntelliJ-style toolbar actions (`+`, `-`, edit) and row double-click supports edit.
 - Global and project sources are persisted separately.
+- Project source paths are stored relative to project root when possible.
 - Rows are sorted: core first, then slot, then extension/display name.
 - Info column shows extension metadata (id, slot, filename, vendor, version, parse error).
 - Apply is blocked if multiple enabled extensions claim the same slot.
@@ -157,6 +160,7 @@ Behavior:
 - `ioports.json`: printer / serial / parallel port commands (chapters 10-03–10-05).
 - `request.json`: Request extension commands.
 - `compact.json`: Picture compactor extension commands.
+- `compiler.json`: Compiler extension commands.
 
 ### Important caveats
 - AMAL language is now fully lexed/highlighted/documented in standalone `.amal` files.
@@ -228,15 +232,7 @@ Q$=Q$+"Third"
 - Current purpose: `Set Buffer should be first instruction`.
 
 ## Build / Packaging
-```bash
-cd /home/boost/Data/Coding/amiga-amos
-./gradlew --no-daemon test
-./gradlew --no-daemon runIde
-./gradlew --no-daemon build
-./gradlew --no-daemon buildPlugin
-```
-
-Distributable plugin ZIP: `build/distributions/amiga-amos-1.1-SNAPSHOT.zip`
+See `BUILDING.md` for build, test, runIde, packaging, and sandbox reset commands.
 
 ## Known RunIde Pitfall
 Stale sandbox / cached plugin metadata after extension-point changes causes:

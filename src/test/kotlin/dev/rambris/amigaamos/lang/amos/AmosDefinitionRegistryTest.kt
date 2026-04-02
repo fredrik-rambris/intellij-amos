@@ -222,6 +222,11 @@ class AmosDefinitionRegistryTest {
                     origin = "music-test",
                     resourcePath = "amos/definitions/music.json",
                     classLoader = this::class.java.classLoader
+                ),
+                AmosDefinitionSource(
+                    origin = "compiler-test",
+                    resourcePath = "amos/definitions/compiler.json",
+                    classLoader = this::class.java.classLoader
                 )
             )
         )
