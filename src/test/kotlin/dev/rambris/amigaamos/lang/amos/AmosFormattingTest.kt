@@ -5,6 +5,36 @@ import kotlin.test.assertEquals
 
 class AmosFormattingTest {
     @Test
+    fun formatterKeepsMnQuitStableAfterReformat() {
+        val source = readResource("/MN_QUIT.Asc")
+        val formatted = AmosCodeStyleFormatter.format(source)
+
+        val normalizedSource = normalizeForComparison(source)
+        val normalizedFormatted = normalizeForComparison(formatted)
+
+        assertEquals(
+            normalizedSource,
+            normalizedFormatted,
+            buildLineDiffMessage(normalizedSource, normalizedFormatted, maxDiffLines = 100),
+        )
+    }
+
+    @Test
+    fun formatterKeepsBnkCreateStableAfterReformat() {
+        val source = readResource("/BNK_CREATE.Asc")
+        val formatted = AmosCodeStyleFormatter.format(source)
+
+        val normalizedSource = normalizeForComparison(source)
+        val normalizedFormatted = normalizeForComparison(formatted)
+
+        assertEquals(
+            normalizedSource,
+            normalizedFormatted,
+            buildLineDiffMessage(normalizedSource, normalizedFormatted, maxDiffLines = 100),
+        )
+    }
+
+    @Test
     fun formatterAppliesAmosCasingAndIndentation() {
         val source = """
             for x=1 to 10
@@ -164,5 +194,58 @@ class AmosFormattingTest {
         val source = "line$=line$+\"!\""
         val result = AmosCodeStyleFormatter.format(source)
         assertEquals("LINE$=LINE$+\"!\"", result)
+    }
+
+    // --- helpers ---
+
+    private fun normalizeForComparison(text: String): String {
+        val lines = text
+            .replace("\r\n", "\n")
+            .replace('\r', '\n')
+            .split('\n')
+            .map { it.trimEnd(' ', '\t') }
+            .toMutableList()
+        while (lines.isNotEmpty() && lines.last().isEmpty()) lines.removeAt(lines.lastIndex)
+        return lines.joinToString("\n")
+    }
+
+    private fun buildLineDiffMessage(expected: String, actual: String, maxDiffLines: Int): String {
+        val expectedLines = expected.split('\n')
+        val actualLines = actual.split('\n')
+        val maxLineCount = maxOf(expectedLines.size, actualLines.size)
+        val lines = mutableListOf<String>()
+        var diffCount = 0
+        for (lineIndex in 0 until maxLineCount) {
+            val expectedLine = expectedLines.getOrNull(lineIndex)
+            val actualLine = actualLines.getOrNull(lineIndex)
+            if (expectedLine == actualLine) continue
+            diffCount++
+            if (diffCount > maxDiffLines) continue
+            val markerColumn = firstMismatchColumn(expectedLine.orEmpty(), actualLine.orEmpty())
+            lines += "line ${lineIndex + 1}:"
+            lines += "  expected: ${expectedLine?.let { "'$it'" } ?: "<missing>"}"
+            lines += "  actual  : ${actualLine?.let { "'$it'" } ?: "<missing>"}"
+            lines += "  marker  : ${" ".repeat(markerColumn)}^"
+        }
+        if (diffCount == 0) return "No differing lines."
+        val header = "Found $diffCount differing line(s). Showing up to $maxDiffLines."
+        return buildString {
+            appendLine(header)
+            lines.forEach { appendLine(it) }
+        }.trimEnd()
+    }
+
+    private fun firstMismatchColumn(expected: String, actual: String): Int {
+        val minLength = minOf(expected.length, actual.length)
+        for (index in 0 until minLength) {
+            if (expected[index] != actual[index]) return index
+        }
+        return minLength
+    }
+
+    private fun readResource(path: String): String {
+        val stream = this::class.java.getResourceAsStream(path)
+        requireNotNull(stream) { "Missing test resource: $path" }
+        return stream.bufferedReader(Charsets.UTF_8).use { it.readText() }
     }
 }

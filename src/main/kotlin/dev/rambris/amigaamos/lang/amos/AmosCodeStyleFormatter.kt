@@ -7,7 +7,7 @@ import java.util.Locale
 object AmosCodeStyleFormatter {
     private const val blockIndentSize = AmosStatementSupport.blockIndentSize
     private const val inlineIfStatement = "IF INLINE"
-    private val lowerCaseLogicalOperators = setOf("AND", "OR")
+    private val lowerCaseLogicalOperators = setOf("AND", "OR", "MOD")
 
     private val openingStatements = AmosStatementSupport.openingKeys
     private val closingStatements = AmosStatementSupport.closingKeys
@@ -55,9 +55,10 @@ object AmosCodeStyleFormatter {
                     val tokenUpper = tokenText.uppercase(Locale.ROOT)
                     if (tokenUpper in lowerCaseLogicalOperators) {
                         tokenText.lowercase(Locale.ROOT)
-                    } else if ((tokenUpper.endsWith("$") || tokenUpper.endsWith("#")) && !isFunctionCallLike(source, lexer.tokenEnd)) {
-                        // Avoid turning typed variable names like LINE$ into command-style camel case.
-                        tokenText.uppercase(Locale.ROOT)
+                    } else if (tokenUpper == "LINE$" && previousWordUpper != "COMMAND") {
+                        tokenUpper
+                    } else if (tokenText == tokenUpper) {
+                        tokenText
                     } else if (previousWordUpper == "PROCEDURE" || inProcedureCallList) {
                         tokenText.uppercase(Locale.ROOT)
                     } else {
@@ -69,6 +70,10 @@ object AmosCodeStyleFormatter {
                 AmosTokenTypes.floatVariable -> {
                     if (inProcedureCallList) {
                         tokenText.uppercase(Locale.ROOT)
+                    } else if (tokenText.any { it.isUpperCase() }) {
+                        tokenText
+                    } else if (tokenText.uppercase(Locale.ROOT) in lowerCaseLogicalOperators) {
+                        tokenText.lowercase(Locale.ROOT)
                     } else {
                         tokenText.uppercase(Locale.ROOT)
                     }
@@ -122,6 +127,7 @@ object AmosCodeStyleFormatter {
 
         val result = StringBuilder(source.length + 32)
         var stmtCount = 0
+        var separatorCountOnLine = 0
         var lastNonWsType: IElementType? = null
         var i = 0
 
@@ -129,7 +135,14 @@ object AmosCodeStyleFormatter {
             val (type, text) = tokens[i]
 
             if (type == AmosTokenTypes.operator && text == ":") {
-                val isLabelColon = stmtCount == 1 && lastNonWsType == AmosTokenTypes.identifier
+                val hasWhitespaceBeforeColon = i > 0 &&
+                    tokens[i - 1].type == TokenType.WHITE_SPACE &&
+                    !tokens[i - 1].text.contains('\n') &&
+                    !tokens[i - 1].text.contains('\r')
+                val isLabelColon = separatorCountOnLine == 0 &&
+                    stmtCount == 1 &&
+                    lastNonWsType == AmosTokenTypes.identifier &&
+                    !hasWhitespaceBeforeColon
 
                 // Remove any trailing horizontal whitespace already in buffer
                 while (result.isNotEmpty() && (result.last() == ' ' || result.last() == '\t')) {
@@ -156,12 +169,14 @@ object AmosCodeStyleFormatter {
 
                 stmtCount = 0
                 lastNonWsType = null
+                separatorCountOnLine++
             } else {
                 result.append(text)
                 when {
                     type == TokenType.WHITE_SPACE && (text.contains('\n') || text.contains('\r')) -> {
                         stmtCount = 0
                         lastNonWsType = null
+                        separatorCountOnLine = 0
                     }
 
                     type != TokenType.WHITE_SPACE && type != null -> {
@@ -197,19 +212,25 @@ object AmosCodeStyleFormatter {
             }
 
             val statementKey = statementKeyByLine[lineIndex].orEmpty()
-            val effectiveIndent = if (statementKey in closingStatements) {
-                (indentLevel - 1).coerceAtLeast(0)
-            } else {
-                indentLevel
-            }
+            val trimmed = line.trim()
+            val leadingClosers = countLeadingInlineClosers(trimmed)
+            val effectiveIndent = (indentLevel - leadingClosers).coerceAtLeast(0)
 
             // trimStart for indentation, trimEnd to remove trailing whitespace
-            val trimmed = line.trim()
             formattedLines += " ".repeat(effectiveIndent * blockIndentSize) + trimmed
 
             indentLevel = effectiveIndent
             if (statementKey in openingStatements) {
                 indentLevel += 1
+            }
+            val ignoredLeadingClosers = if (statementKey in closingStatements) {
+                (leadingClosers - 1).coerceAtLeast(0)
+            } else {
+                0
+            }
+            indentLevel += computeAdditionalInlineDelta(trimmed, ignoredLeadingClosers)
+            if (indentLevel < 0) {
+                indentLevel = 0
             }
         }
 
@@ -241,10 +262,140 @@ object AmosCodeStyleFormatter {
             }
 
             val line = lineByOffset(segment.startOffset)
-            keyByLine.putIfAbsent(line, statementKey)
+
+            // If an opener has its matching closer on the same line (colon-separated inline block),
+            // treat it as inline so we don't incorrectly indent subsequent lines.
+            val effectiveKey = if (statementKey in openingStatements && segment.endsWithColonSeparator) {
+                val lineEnd = lineStarts.getOrElse(line + 1) { source.length }
+                val lineText = source.substring(lineStarts[line], lineEnd)
+                if (hasMatchingInlineCloser(statementKey, lineText)) inlineIfStatement else statementKey
+            } else {
+                statementKey
+            }
+
+            keyByLine.putIfAbsent(line, effectiveKey)
         }
 
         return keyByLine
+    }
+
+    private fun hasMatchingInlineCloser(statementKey: String, lineText: String): Boolean {
+        val pattern = when (statementKey) {
+            "IF", "ELSE IF" -> ":\\s*end\\s+if\\b"
+            "FOR" -> ":\\s*next\\b"
+            "WHILE" -> ":\\s*wend\\b"
+            "REPEAT" -> ":\\s*until\\b"
+            "DO" -> ":\\s*loop\\b"
+            "PROCEDURE" -> ":\\s*end\\s+proc\\b"
+            else -> null
+        } ?: return false
+        return Regex(pattern, RegexOption.IGNORE_CASE).containsMatchIn(lineText)
+    }
+
+    private fun computeAdditionalInlineDelta(line: String, ignoredLeadingClosers: Int = 0): Int {
+        val segments = AmosStatementSupport.splitStatements(line)
+        if (segments.size <= 1) {
+            return 0
+        }
+
+        val firstNormalized = AmosStatementSupport.normalizeForAnalysis(segments.first())
+        val firstRawKey = when {
+            AmosStatementSupport.isInlineIfStatement(firstNormalized) -> inlineIfStatement
+            else -> AmosStatementSupport.statementKey(firstNormalized)
+        }
+
+        var delta = 0
+        var remainingIgnoredLeadingClosers = ignoredLeadingClosers
+        var scanningLeadingClosers = ignoredLeadingClosers > 0
+        val pendingInlineClosers = mutableMapOf<String, Int>()
+        if (firstRawKey in openingStatements && hasMatchingInlineCloser(firstRawKey, line)) {
+            val closerKey = matchingCloserFor(firstRawKey)
+            if (closerKey.isNotEmpty()) {
+                pendingInlineClosers[closerKey] = pendingInlineClosers.getOrDefault(closerKey, 0) + 1
+            }
+        }
+        for (segment in segments.drop(1)) {
+            val normalized = AmosStatementSupport.normalizeForAnalysis(segment)
+            if (normalized.isEmpty()) {
+                continue
+            }
+
+            val rawKey = when {
+                AmosStatementSupport.isInlineIfStatement(normalized) -> inlineIfStatement
+                else -> AmosStatementSupport.statementKey(normalized)
+            }
+            if (rawKey.isEmpty() || rawKey == inlineIfStatement) {
+                continue
+            }
+
+            val key = when {
+                segment.endsWithColonSeparator && rawKey in openingStatements && hasMatchingInlineCloser(rawKey, line) -> inlineIfStatement
+                else -> rawKey
+            }
+            if (key == inlineIfStatement) {
+                val closerKey = matchingCloserFor(rawKey)
+                if (closerKey.isNotEmpty()) {
+                    pendingInlineClosers[closerKey] = pendingInlineClosers.getOrDefault(closerKey, 0) + 1
+                }
+                continue
+            }
+
+            if (scanningLeadingClosers) {
+                if (key in closingStatements && remainingIgnoredLeadingClosers > 0) {
+                    remainingIgnoredLeadingClosers--
+                    continue
+                }
+                scanningLeadingClosers = false
+            }
+
+            val pending = pendingInlineClosers[key] ?: 0
+            if (key in closingStatements && pending > 0) {
+                if (pending == 1) {
+                    pendingInlineClosers.remove(key)
+                } else {
+                    pendingInlineClosers[key] = pending - 1
+                }
+                continue
+            }
+
+            if (key in closingStatements) {
+                delta -= 1
+            }
+            if (key in openingStatements) {
+                delta += 1
+            }
+        }
+
+        return delta
+    }
+
+    private fun matchingCloserFor(openingKey: String): String {
+        return when (openingKey) {
+            "IF", "ELSE IF" -> "END IF"
+            "FOR" -> "NEXT"
+            "WHILE" -> "WEND"
+            "REPEAT" -> "UNTIL"
+            "DO" -> "LOOP"
+            "PROCEDURE" -> "END PROC"
+            else -> ""
+        }
+    }
+
+    private fun countLeadingInlineClosers(line: String): Int {
+        var count = 0
+        for (segment in AmosStatementSupport.splitStatements(line)) {
+            val normalized = AmosStatementSupport.normalizeForAnalysis(segment)
+            if (normalized.isEmpty()) {
+                continue
+            }
+            val key = AmosStatementSupport.statementKey(normalized)
+            if (key in closingStatements) {
+                count++
+            } else {
+                break
+            }
+        }
+        return count
     }
 
     private fun computeLineStarts(source: String): List<Int> {
@@ -283,13 +434,6 @@ object AmosCodeStyleFormatter {
         }
     }
 
-    private fun isFunctionCallLike(source: String, offset: Int): Boolean {
-        var i = offset
-        while (i < source.length && (source[i] == ' ' || source[i] == '\t')) {
-            i++
-        }
-        return i < source.length && source[i] == '('
-    }
 
     private fun String.toAmosCamelCase(): String {
         if (isEmpty()) {

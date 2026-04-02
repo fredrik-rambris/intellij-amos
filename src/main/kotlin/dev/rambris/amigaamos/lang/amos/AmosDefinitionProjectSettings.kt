@@ -4,12 +4,13 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SimpleModificationTracker
 import java.util.Locale
 
 @Service(Service.Level.PROJECT)
 @State(name = "AmosDefinitionProjectSettings", storages = [Storage("amiga-amos.xml")])
-class AmosDefinitionProjectSettings :
+class AmosDefinitionProjectSettings(private val project: Project) :
     PersistentStateComponent<AmosDefinitionProjectSettings.State>,
     SimpleModificationTracker() {
 
@@ -43,7 +44,7 @@ class AmosDefinitionProjectSettings :
 
     fun additionalDefinitionSourceEntries(): List<Pair<String, AmosDefinitionSource>> {
         return additionalSourceReferences().mapNotNull { reference ->
-            AmosDefinitionSourceReferences.toSource(reference)?.let { source -> reference to source }
+            AmosDefinitionSourceReferences.toSource(reference, project.basePath)?.let { source -> reference to source }
         }
     }
 

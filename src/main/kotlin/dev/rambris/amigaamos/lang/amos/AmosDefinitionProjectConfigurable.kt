@@ -2,18 +2,22 @@ package dev.rambris.amigaamos.lang.amos
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.actionSystem.ActionToolbarPosition
 import com.intellij.openapi.components.service
+import com.intellij.openapi.fileChooser.FileChooser
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
-import com.intellij.ui.components.JBScrollPane
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.table.JBTable
 import kotlinx.serialization.json.Json
 import java.net.URI
+import java.nio.file.Path
 import java.util.Locale
 import javax.swing.Icon
-import javax.swing.JButton
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -44,7 +48,7 @@ class AmosDefinitionProjectConfigurable(private val project: Project) : Searchab
 
     override fun getId(): String = "settings.amos.definitions"
 
-    override fun getDisplayName(): String = "AMOS Definitions"
+    override fun getDisplayName(): String = "Definitions"
 
     override fun createComponent(): JComponent = panel
 
@@ -78,7 +82,7 @@ class AmosDefinitionProjectConfigurable(private val project: Project) : Searchab
             .map { it.reference }
         val projectSources = projectModel.rows
             .filter { it.sourceKind == AmosDefinitionSourceKind.PROJECT }
-            .map { it.reference }
+            .map { normalizeReferenceForStorage(it.reference, AmosDefinitionSourceKind.PROJECT) }
 
         val globalDisabled = globalModel.rows
             .asSequence()
@@ -142,6 +146,9 @@ class AmosDefinitionProjectConfigurable(private val project: Project) : Searchab
                 }
                 val modelColumn = table.convertColumnIndexToModel(viewColumn)
                 if (modelColumn != 5) {
+                    if (e.clickCount == 2 && e.button == java.awt.event.MouseEvent.BUTTON1) {
+                        editSelectedEntry(table, model, addKind)
+                    }
                     return
                 }
                 val rowIndex = table.convertRowIndexToModel(viewRow)
@@ -153,52 +160,89 @@ class AmosDefinitionProjectConfigurable(private val project: Project) : Searchab
             }
         })
 
+        val tableWithToolbar = ToolbarDecorator.createDecorator(table)
+            .disableUpDownActions()
+            .setToolbarPosition(ActionToolbarPosition.TOP)
+            .setAddAction {
+                addEntry(model, addKind)
+            }
+            .setRemoveAction {
+                removeSelectedEntry(table, model)
+            }
+            .setEditAction {
+                editSelectedEntry(table, model, addKind)
+            }
+            .createPanel()
+
         return JPanel().apply {
             layout = java.awt.BorderLayout(4, 4)
             add(JLabel(title), java.awt.BorderLayout.NORTH)
-            add(JBScrollPane(table), java.awt.BorderLayout.CENTER)
-            add(
-                JPanel().apply {
-                    layout = java.awt.FlowLayout(java.awt.FlowLayout.LEFT)
-                    add(JButton("+").apply {
-                        addActionListener {
-                            addEntry(model, addKind)
-                        }
-                    })
-                    add(JButton("-").apply {
-                        addActionListener {
-                            val selected = table.selectedRow
-                            if (selected < 0) {
-                                return@addActionListener
-                            }
-                            val rowIndex = table.convertRowIndexToModel(selected)
-                            if (rowIndex !in model.rows.indices) {
-                                return@addActionListener
-                            }
-                            val row = model.rows[rowIndex]
-                            if (!row.canRemove) {
-                                return@addActionListener
-                            }
-                            model.rows.removeAt(rowIndex)
-                            sortRows(model.rows)
-                            model.fireTableDataChanged()
-                        }
-                    })
-                },
-                java.awt.BorderLayout.SOUTH
-            )
+            add(tableWithToolbar, java.awt.BorderLayout.CENTER)
         }
     }
 
-    private fun addEntry(model: DefinitionTableModel, sourceKind: AmosDefinitionSourceKind) {
-        val value = Messages.showInputDialog(
-            project,
-            "Enter definition file path or URI",
-            "Add AMOS Definition",
-            null
-        ) ?: return
+    private fun removeSelectedEntry(table: JBTable, model: DefinitionTableModel) {
+        val selected = table.selectedRow
+        if (selected < 0) {
+            return
+        }
+        val rowIndex = table.convertRowIndexToModel(selected)
+        if (rowIndex !in model.rows.indices) {
+            return
+        }
+        val row = model.rows[rowIndex]
+        if (!row.canRemove) {
+            return
+        }
+        model.rows.removeAt(rowIndex)
+        sortRows(model.rows)
+        model.fireTableDataChanged()
+    }
 
-        val reference = value.trim()
+    private fun editSelectedEntry(table: JBTable, model: DefinitionTableModel, sourceKind: AmosDefinitionSourceKind) {
+        val selected = table.selectedRow
+        if (selected < 0) {
+            return
+        }
+        val rowIndex = table.convertRowIndexToModel(selected)
+        editEntry(model, rowIndex, sourceKind)
+    }
+
+    private fun editEntry(model: DefinitionTableModel, rowIndex: Int, sourceKind: AmosDefinitionSourceKind) {
+        if (rowIndex !in model.rows.indices) {
+            return
+        }
+        val existing = model.rows[rowIndex]
+        if (!existing.canRemove) {
+            return
+        }
+
+        val replacement = chooseDefinitionReference(sourceKind, existing.reference)
+        if (replacement.isEmpty() || replacement.equals(existing.reference, ignoreCase = true)) {
+            return
+        }
+        if (model.rows.withIndex().any { (idx, row) -> idx != rowIndex && row.reference.equals(replacement, ignoreCase = true) }) {
+            return
+        }
+
+        val metadata = parseDefinitionMetadata(replacement, sourceKind)
+        model.rows[rowIndex] = existing.copy(
+            reference = replacement,
+            extensionId = metadata.extensionId,
+            extensionName = metadata.extensionName,
+            extensionFilename = metadata.extensionFilename,
+            extensionVendor = metadata.extensionVendor,
+            extensionVersion = metadata.extensionVersion,
+            slot = metadata.slot,
+            canDisable = metadata.extensionId != null,
+            parseError = metadata.parseError
+        )
+        sortRows(model.rows)
+        model.fireTableDataChanged()
+    }
+
+    private fun addEntry(model: DefinitionTableModel, sourceKind: AmosDefinitionSourceKind) {
+        val reference = chooseDefinitionReference(sourceKind)
         if (reference.isEmpty()) {
             return
         }
@@ -207,7 +251,7 @@ class AmosDefinitionProjectConfigurable(private val project: Project) : Searchab
             return
         }
 
-        val metadata = parseDefinitionMetadata(reference)
+        val metadata = parseDefinitionMetadata(reference, sourceKind)
         model.rows += DefinitionRow(
             sourceKind = sourceKind,
             reference = reference,
@@ -224,6 +268,70 @@ class AmosDefinitionProjectConfigurable(private val project: Project) : Searchab
         )
         sortRows(model.rows)
         model.fireTableDataChanged()
+    }
+
+    private fun chooseDefinitionReference(sourceKind: AmosDefinitionSourceKind, initialReference: String? = null): String {
+        val descriptor = FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor()
+            .withTitle("Add AMOS Definition")
+            .withDescription("Select a JSON definition file")
+            .withFileFilter { file -> file.isDirectory || file.extension?.equals("json", ignoreCase = true) == true }
+
+        val localFs = LocalFileSystem.getInstance()
+        val initial = initialReference?.trim().orEmpty()
+        val initialFile = resolveReferenceToAbsolutePath(initial, sourceKind)
+            ?.let { localFs.findFileByPath(it) }
+        val baseDir = project.basePath?.let { localFs.findFileByPath(it) }
+        val selected = FileChooser.chooseFile(descriptor, project, initialFile ?: baseDir)
+        return normalizeReferenceForStorage(selected?.path.orEmpty(), sourceKind)
+    }
+
+    private fun resolveReferenceToAbsolutePath(reference: String, sourceKind: AmosDefinitionSourceKind): String? {
+        if (reference.isEmpty() || reference.startsWith("classpath:")) {
+            return null
+        }
+        val uri = runCatching { URI(reference) }.getOrNull()
+        if (uri != null && !uri.scheme.isNullOrBlank()) {
+            return if (uri.scheme.equals("file", ignoreCase = true)) {
+                runCatching { Path.of(uri).toString() }.getOrNull()
+            } else {
+                null
+            }
+        }
+        val candidate = runCatching { Path.of(reference) }.getOrNull() ?: return null
+        if (candidate.isAbsolute) {
+            return candidate.normalize().toString()
+        }
+        if (sourceKind == AmosDefinitionSourceKind.PROJECT) {
+            val base = project.basePath ?: return null
+            return runCatching { Path.of(base).resolve(candidate).normalize().toString() }.getOrNull()
+        }
+        return null
+    }
+
+    private fun normalizeReferenceForStorage(reference: String, sourceKind: AmosDefinitionSourceKind): String {
+        val trimmed = reference.trim()
+        if (trimmed.isEmpty() || sourceKind != AmosDefinitionSourceKind.PROJECT) {
+            return trimmed
+        }
+        if (trimmed.startsWith("classpath:")) {
+            return trimmed
+        }
+
+        val uriHasScheme = runCatching { URI(trimmed).scheme }.getOrNull()?.isNotBlank() == true
+        if (uriHasScheme) {
+            return trimmed
+        }
+
+        val projectBasePath = project.basePath ?: return trimmed
+        val projectRoot = runCatching { Path.of(projectBasePath).normalize() }.getOrNull() ?: return trimmed
+        val candidate = runCatching { Path.of(trimmed) }.getOrNull() ?: return trimmed
+        val absoluteCandidate = if (candidate.isAbsolute) candidate.normalize() else projectRoot.resolve(candidate).normalize()
+
+        return if (absoluteCandidate.startsWith(projectRoot)) {
+            projectRoot.relativize(absoluteCandidate).toString().replace('\\', '/')
+        } else {
+            absoluteCandidate.toString().replace('\\', '/')
+        }
     }
 
     private fun sortRows(rows: MutableList<DefinitionRow>) {
@@ -286,8 +394,9 @@ class AmosDefinitionProjectConfigurable(private val project: Project) : Searchab
         val parseError: String?
     )
 
-    private fun parseDefinitionMetadata(reference: String): DefinitionMetadata {
-        val source = AmosDefinitionSourceReferences.toSource(reference)
+    private fun parseDefinitionMetadata(reference: String, sourceKind: AmosDefinitionSourceKind): DefinitionMetadata {
+        val projectBasePath = if (sourceKind == AmosDefinitionSourceKind.PROJECT) project.basePath else null
+        val source = AmosDefinitionSourceReferences.toSource(reference, projectBasePath)
             ?: return DefinitionMetadata(null, null, null, null, null, null, "Invalid source reference")
 
         val file = runCatching {

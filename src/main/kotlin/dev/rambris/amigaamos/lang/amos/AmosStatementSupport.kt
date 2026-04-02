@@ -123,22 +123,33 @@ object AmosStatementSupport {
     fun statementKey(text: String): String {
         val normalized = text.trimStart().uppercase(Locale.ROOT)
         return when {
-            normalized.startsWith("END PROC") -> "END PROC"
-            normalized.startsWith("PROCEDURE") -> "PROCEDURE"
-            normalized.startsWith("END IF") -> "END IF"
-            normalized.startsWith("ELSE IF") -> "ELSE IF"
-            normalized.startsWith("IF") -> "IF"
-            normalized.startsWith("ELSE") -> "ELSE"
-            normalized.startsWith("FOR") -> "FOR"
-            normalized.startsWith("NEXT") -> "NEXT"
-            normalized.startsWith("WHILE") -> "WHILE"
-            normalized.startsWith("WEND") -> "WEND"
-            normalized.startsWith("REPEAT") -> "REPEAT"
-            normalized.startsWith("UNTIL") -> "UNTIL"
-            normalized.startsWith("DO") -> "DO"
-            normalized.startsWith("LOOP") -> "LOOP"
+            normalized.startsWithWord("END PROC") -> "END PROC"
+            normalized.startsWithWord("PROCEDURE") -> "PROCEDURE"
+            normalized.startsWithWord("END IF") -> "END IF"
+            normalized.startsWithWord("ELSE IF") -> "ELSE IF"
+            normalized.startsWithWord("IF") -> "IF"
+            normalized.startsWithWord("ELSE") -> "ELSE"
+            normalized.startsWithWord("FOR") -> "FOR"
+            normalized.startsWithWord("NEXT") -> "NEXT"
+            normalized.startsWithWord("WHILE") -> "WHILE"
+            normalized.startsWithWord("WEND") -> "WEND"
+            normalized.startsWithWord("REPEAT") -> "REPEAT"
+            normalized.startsWithWord("UNTIL") -> "UNTIL"
+            normalized.startsWithWord("DO") -> "DO"
+            normalized.startsWithWord("LOOP") -> "LOOP"
             else -> ""
         }
+    }
+
+    private fun String.startsWithWord(prefix: String): Boolean {
+        if (!startsWith(prefix)) {
+            return false
+        }
+        if (length == prefix.length) {
+            return true
+        }
+        val next = this[prefix.length]
+        return next == ' ' || next == '\t' || next == ':' || next == '[' || next == '('
     }
 
     /**

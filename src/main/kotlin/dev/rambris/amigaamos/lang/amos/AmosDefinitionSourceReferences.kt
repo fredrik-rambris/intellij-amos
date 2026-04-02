@@ -4,7 +4,7 @@ import java.net.URI
 import java.nio.file.Path
 
 internal object AmosDefinitionSourceReferences {
-    fun toSource(reference: String): AmosDefinitionSource? {
+    fun toSource(reference: String, projectBasePath: String? = null): AmosDefinitionSource? {
         val trimmed = reference.trim()
         if (trimmed.isEmpty()) {
             return null
@@ -25,7 +25,13 @@ internal object AmosDefinitionSourceReferences {
         val normalizedUri = runCatching {
             val parsed = URI(trimmed)
             if (parsed.scheme.isNullOrBlank()) {
-                Path.of(trimmed).toUri().toString()
+                val path = Path.of(trimmed)
+                val resolved = when {
+                    path.isAbsolute -> path
+                    !projectBasePath.isNullOrBlank() -> Path.of(projectBasePath).resolve(path)
+                    else -> path
+                }
+                resolved.normalize().toUri().toString()
             } else {
                 parsed.toString()
             }

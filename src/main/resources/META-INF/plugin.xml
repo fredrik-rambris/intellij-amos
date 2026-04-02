@@ -60,7 +60,7 @@
         <colorSettingsPage implementation="dev.rambris.amigaamos.lang.amal.AmalColorSettingsPage"/>
         <projectConfigurable
                 id="settings.amos"
-                parentId="languages"
+                parentId="language"
                 displayName="AMOS"
                 instance="dev.rambris.amigaamos.lang.amos.AmosProjectConfigurable"/>
         <projectConfigurable
