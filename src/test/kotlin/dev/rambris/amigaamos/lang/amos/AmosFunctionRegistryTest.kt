@@ -34,5 +34,68 @@ class AmosFunctionRegistryTest {
         assertEquals(AmosValueType.INTEGER, AmosFunctionRegistry.expectedParameterType("MID$", 1))
         assertEquals(AmosValueType.INTEGER, AmosFunctionRegistry.expectedParameterType("MID$", 2))
     }
+
+    @Test
+    fun `instruction call context found for Screen Open first parameter`() {
+        val source = "Screen Open <caret>0,320,256,2,Lowres"
+        val offset = source.indexOf("<caret>")
+        val clean = source.replace("<caret>", "")
+
+        val ctx = AmosFunctionRegistry.findInstructionCallContext(clean, offset, null)
+
+        assertNotNull(ctx)
+        assertEquals("SCREEN OPEN", ctx.name)
+        assertEquals(0, ctx.currentParameterIndex)
+    }
+
+    @Test
+    fun `instruction call context finds correct parameter index by comma count`() {
+        val source = "Screen Open 0,320<caret>,256,2,Lowres"
+        val offset = source.indexOf("<caret>")
+        val clean = source.replace("<caret>", "")
+
+        val ctx = AmosFunctionRegistry.findInstructionCallContext(clean, offset, null)
+
+        assertNotNull(ctx)
+        assertEquals("SCREEN OPEN", ctx.name)
+        assertEquals(1, ctx.currentParameterIndex)
+    }
+
+    @Test
+    fun `instruction call context resets across statement separator`() {
+        val source = "Screen Open 0,320,256,2,Lowres : Screen Display 0,0,<caret>0,320,256"
+        val offset = source.indexOf("<caret>")
+        val clean = source.replace("<caret>", "")
+
+        val ctx = AmosFunctionRegistry.findInstructionCallContext(clean, offset, null)
+
+        assertNotNull(ctx)
+        assertEquals("SCREEN DISPLAY", ctx.name)
+        assertEquals(2, ctx.currentParameterIndex)
+    }
+
+    @Test
+    fun `call context finds multi-word function name`() {
+        val source = "D=Dialog Box(1,1<caret>,Resource\$(60))"
+        val offset = source.indexOf("<caret>")
+        val clean = source.replace("<caret>", "")
+
+        val ctx = AmosFunctionRegistry.findCallContext(clean, offset)
+
+        assertNotNull(ctx)
+        assertEquals("DIALOG BOX", ctx.name)
+        assertEquals(1, ctx.currentParameterIndex)
+    }
+
+    @Test
+    fun `instruction call context returns null for assignment statement`() {
+        val source = "A=<caret>42"
+        val offset = source.indexOf("<caret>")
+        val clean = source.replace("<caret>", "")
+
+        val ctx = AmosFunctionRegistry.findInstructionCallContext(clean, offset, null)
+
+        kotlin.test.assertNull(ctx)
+    }
 }
 

@@ -4,7 +4,8 @@
     "name": "Request",
     "filename": "AMOSPro_Request.Lib",
     "slot": 3,
-    "vendor": "Fran\u00e7ois Lionet"
+    "vendor": "François Lionet",
+    "start": 6
   },
   "definitions": [
     {
@@ -14,7 +15,8 @@
       "signatures": [
         {
           "presentation": "Request Wb",
-          "parameters": []
+          "parameters": [],
+          "offset": 40
         }
       ],
       "link": "https://amospromanual.dev/11-05-libraries-and-devices.html#i-request-wb"
@@ -26,7 +28,8 @@
       "signatures": [
         {
           "presentation": "Request On",
-          "parameters": []
+          "parameters": [],
+          "offset": 6
         }
       ],
       "link": "https://amospromanual.dev/11-05-libraries-and-devices.html#i-request-on"
@@ -38,7 +41,8 @@
       "signatures": [
         {
           "presentation": "Request Off",
-          "parameters": []
+          "parameters": [],
+          "offset": 22
         }
       ],
       "link": "https://amospromanual.dev/11-05-libraries-and-devices.html#i-request-off"

@@ -83,7 +83,7 @@ data class AmosDefinitionEntry(
 
 @Serializable
 data class AmosSignatureEntry(
-    val presentation: String,
+    val presentation: String? = null,
     val documentation: String? = null,
     val parameters: List<AmosParameterEntry> = emptyList()
 )

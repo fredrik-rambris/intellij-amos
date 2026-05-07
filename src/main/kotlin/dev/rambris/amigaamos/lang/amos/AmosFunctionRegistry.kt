@@ -75,6 +75,76 @@ object AmosFunctionRegistry {
         )
     }
 
+    fun signaturesForInstruction(name: String, project: Project?): List<AmosFunctionSignature> {
+        return AmosDefinitionRegistry.definitionFor(name, AmosDefinitionKind.INSTRUCTION, project)?.signatures.orEmpty()
+    }
+
+    fun findInstructionCallContext(source: String, offset: Int, project: Project?): AmosFunctionCallContext? {
+        val clampedOffset = offset.coerceIn(0, source.length)
+
+        val instructionNames = AmosDefinitionRegistry.definitions(project)
+            .asSequence()
+            .filter { it.kind == AmosDefinitionKind.INSTRUCTION && it.signatures.isNotEmpty() }
+            .map { it.uppercaseName }
+            .toHashSet()
+
+        val lexer = AmosLexer()
+        lexer.start(source, 0, clampedOffset, 0)
+
+        var collectingKeywords = true
+        val stmtKeywords = mutableListOf<String>()
+        var instructionName: String? = null
+        var paramStartOffset = -1
+        var parameterIndex = 0
+        var inParameters = false
+
+        fun reset() {
+            collectingKeywords = true
+            stmtKeywords.clear()
+            instructionName = null
+            paramStartOffset = -1
+            parameterIndex = 0
+            inParameters = false
+        }
+
+        while (lexer.tokenType != null) {
+            val tokenType = lexer.tokenType
+            val tokenStart = lexer.tokenStart
+            val tokenText = source.substring(tokenStart, lexer.tokenEnd)
+
+            when {
+                tokenType == TokenType.WHITE_SPACE -> {
+                    if ('\n' in tokenText || '\r' in tokenText) reset()
+                }
+                tokenType == AmosTokenTypes.operator && tokenText == ":" -> reset()
+                tokenType == AmosTokenTypes.comment -> reset()
+                inParameters && tokenType == AmosTokenTypes.comma -> parameterIndex++
+                inParameters -> Unit
+                collectingKeywords && tokenType == AmosTokenTypes.keyword -> {
+                    stmtKeywords.add(tokenText.uppercase(Locale.ROOT))
+                    val candidate = stmtKeywords.joinToString(" ")
+                    if (candidate in instructionNames) instructionName = candidate
+                }
+                collectingKeywords -> {
+                    collectingKeywords = false
+                    if (instructionName != null) {
+                        inParameters = true
+                        paramStartOffset = tokenStart
+                    }
+                }
+            }
+
+            lexer.advance()
+        }
+
+        val finalName = instructionName ?: return null
+        return AmosFunctionCallContext(
+            name = finalName,
+            leftParenthesisOffset = if (paramStartOffset >= 0) paramStartOffset else clampedOffset,
+            currentParameterIndex = parameterIndex
+        )
+    }
+
     fun findCallContext(source: String, offset: Int): AmosFunctionCallContext? {
         val clampedOffset = offset.coerceIn(0, source.length)
         val lexer = AmosLexer()
@@ -88,11 +158,19 @@ object AmosFunctionRegistry {
 
             when {
                 tokenType == TokenType.WHITE_SPACE -> Unit
-                isFunctionToken(tokenType) && hasSignatures(tokenText) -> {
-                    pendingFunctionName = tokenText.uppercase(Locale.ROOT)
+                isFunctionToken(tokenType) -> {
+                    val word = tokenText.uppercase(Locale.ROOT)
+                    val combined = pendingFunctionName?.let { "$it $word" }
+                    pendingFunctionName = when {
+                        combined != null && hasSignatures(combined) -> combined
+                        hasSignatures(word) -> word
+                        combined != null -> combined
+                        else -> word
+                    }
                 }
                 tokenType == AmosTokenTypes.paren && tokenText == "(" -> {
-                    stack += CallFrame(pendingFunctionName, lexer.tokenStart, 0)
+                    val name = pendingFunctionName?.takeIf { hasSignatures(it) }
+                    stack += CallFrame(name, lexer.tokenStart, 0)
                     pendingFunctionName = null
                 }
                 tokenType == AmosTokenTypes.paren && tokenText == ")" -> {

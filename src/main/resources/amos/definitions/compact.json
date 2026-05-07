@@ -4,7 +4,8 @@
     "name": "Picture compactor extension",
     "filename": "AMOSPro_Compact.Lib",
     "slot": 2,
-    "vendor": "François Lionet"
+    "vendor": "François Lionet",
+    "start": 6
   },
   "definitions": [
     {
@@ -29,7 +30,8 @@
               "name": "bank number",
               "valueType": "integer"
             }
-          ]
+          ],
+          "offset": 38
         },
         {
           "presentation": "Spack screen number To bank number x1, y1, x2, y2",
@@ -68,7 +70,8 @@
               "name": "y2",
               "valueType": "integer"
             }
-          ]
+          ],
+          "offset": 54
         }
       ],
       "link": "https://amospromanual.dev/06-02-using-screens.html#picoext-spack"
@@ -95,7 +98,8 @@
               "name": "bank number",
               "valueType": "integer"
             }
-          ]
+          ],
+          "offset": 6
         },
         {
           "presentation": "Pack screen number To bank number x1, y1, x2, y2",
@@ -134,7 +138,8 @@
               "name": "y2",
               "valueType": "integer"
             }
-          ]
+          ],
+          "offset": 20
         }
       ],
       "link": "https://amospromanual.dev/06-02-using-screens.html#picoext-pack"
@@ -152,7 +157,8 @@
               "name": "bank number",
               "valueType": "integer"
             }
-          ]
+          ],
+          "offset": 72
         },
         {
           "presentation": "Unpack bank number, x, y",
@@ -172,7 +178,8 @@
               "name": "y",
               "valueType": "integer"
             }
-          ]
+          ],
+          "offset": 96
         },
         {
           "presentation": "Unpack bank number To screen number",
@@ -191,7 +198,8 @@
               "name": "screen number",
               "valueType": "integer"
             }
-          ]
+          ],
+          "offset": 86
         }
       ],
       "link": "https://amospromanual.dev/06-02-using-screens.html#picoext-unpack"

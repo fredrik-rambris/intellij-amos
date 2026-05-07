@@ -326,11 +326,12 @@ object AmosDefinitionRegistry {
             returnType = returnType,
             documentation = documentation,
             link = link?.let { runCatching { URI(it) }.getOrNull() },
-            signatures = signatures.map { signature ->
+            signatures = signatures.mapNotNull { signature ->
+                val presentation = signature.presentation ?: return@mapNotNull null
                 AmosFunctionSignature(
                     name = name,
-                    presentation = signature.presentation,
-                    parameterRanges = computeParameterRanges(signature.presentation, signature.parameters),
+                    presentation = presentation,
+                    parameterRanges = computeParameterRanges(presentation, signature.parameters),
                     parameters = signature.parameters.map { parameter ->
                         AmosParameterSpec(
                             kind = parameter.kind,

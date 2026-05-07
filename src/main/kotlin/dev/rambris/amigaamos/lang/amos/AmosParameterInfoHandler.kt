@@ -8,27 +8,45 @@ import com.intellij.lang.parameterInfo.UpdateParameterInfoContext
 class AmosParameterInfoHandler : ParameterInfoHandler<AmosFile, AmosFunctionSignature> {
     override fun findElementForParameterInfo(context: CreateParameterInfoContext): AmosFile? {
         val file = context.file as? AmosFile ?: return null
-        val callContext = AmosFunctionRegistry.findCallContext(file.text, context.offset) ?: return null
-        val signatures = AmosFunctionRegistry.signaturesFor(callContext.name, file.project)
-        if (signatures.isEmpty()) {
-            return null
+
+        val funcContext = AmosFunctionRegistry.findCallContext(file.text, context.offset)
+        if (funcContext != null) {
+            val signatures = AmosFunctionRegistry.signaturesFor(funcContext.name, file.project)
+            if (signatures.isNotEmpty()) {
+                context.itemsToShow = signatures.toTypedArray()
+                return file
+            }
         }
-        context.itemsToShow = signatures.toTypedArray()
-        return file
+
+        val instrContext = AmosFunctionRegistry.findInstructionCallContext(file.text, context.offset, file.project)
+        if (instrContext != null) {
+            val signatures = AmosFunctionRegistry.signaturesForInstruction(instrContext.name, file.project)
+            if (signatures.isNotEmpty()) {
+                context.itemsToShow = signatures.toTypedArray()
+                return file
+            }
+        }
+
+        return null
     }
 
     override fun showParameterInfo(element: AmosFile, context: CreateParameterInfoContext) {
-        val callContext = AmosFunctionRegistry.findCallContext(element.text, context.offset) ?: return
+        val callContext = AmosFunctionRegistry.findCallContext(element.text, context.offset)
+            ?: AmosFunctionRegistry.findInstructionCallContext(element.text, context.offset, element.project)
+            ?: return
         context.showHint(element, callContext.leftParenthesisOffset, this)
     }
 
     override fun findElementForUpdatingParameterInfo(context: UpdateParameterInfoContext): AmosFile? {
         val file = context.file as? AmosFile ?: return null
-        return file.takeIf { AmosFunctionRegistry.findCallContext(it.text, context.offset) != null }
+        val hasContext = AmosFunctionRegistry.findCallContext(file.text, context.offset) != null
+            || AmosFunctionRegistry.findInstructionCallContext(file.text, context.offset, file.project) != null
+        return file.takeIf { hasContext }
     }
 
     override fun updateParameterInfo(parameterOwner: AmosFile, context: UpdateParameterInfoContext) {
         val callContext = AmosFunctionRegistry.findCallContext(parameterOwner.text, context.offset)
+            ?: AmosFunctionRegistry.findInstructionCallContext(parameterOwner.text, context.offset, parameterOwner.project)
         if (callContext == null) {
             context.removeHint()
             return

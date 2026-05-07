@@ -4,7 +4,8 @@
     "name": "IOPorts",
     "filename": "AMOSPro_IOPorts.Lib",
     "slot": 6,
-    "vendor": "Fran\u00e7ois Lionet"
+    "vendor": "François Lionet",
+    "start": 6
   },
   "definitions": [
     {
@@ -14,7 +15,8 @@
       "signatures": [
         {
           "presentation": "Printer Open",
-          "parameters": []
+          "parameters": [],
+          "offset": 412
         }
       ],
       "link": "https://amospromanual.dev/10-03-accessing-a-printer.html#i-printer-open"
@@ -26,7 +28,8 @@
       "signatures": [
         {
           "presentation": "Printer Close",
-          "parameters": []
+          "parameters": [],
+          "offset": 430
         }
       ],
       "link": "https://amospromanual.dev/10-03-accessing-a-printer.html#i-printer-close"
@@ -38,7 +41,8 @@
       "signatures": [
         {
           "presentation": "Printer Send",
-          "parameters": []
+          "parameters": [],
+          "offset": 450
         }
       ],
       "link": "https://amospromanual.dev/10-03-accessing-a-printer.html#i-printer-send"
@@ -50,6 +54,17 @@
       "signatures": [
         {
           "presentation": "Printer Dump",
+          "parameters": [],
+          "offset": 490
+        },
+        {
+          "offset": 510,
+          "commaGroups": 3,
+          "parameters": []
+        },
+        {
+          "offset": 524,
+          "commaGroups": 6,
           "parameters": []
         }
       ],
@@ -62,7 +77,8 @@
       "signatures": [
         {
           "presentation": "Printer Out",
-          "parameters": []
+          "parameters": [],
+          "offset": 470
         }
       ],
       "link": "https://amospromanual.dev/10-03-accessing-a-printer.html#i-printer-out"
@@ -74,7 +90,8 @@
       "signatures": [
         {
           "presentation": "Printer Abort",
-          "parameters": []
+          "parameters": [],
+          "offset": 544
         }
       ],
       "link": "https://amospromanual.dev/10-03-accessing-a-printer.html#i-printer-abort"
@@ -86,7 +103,8 @@
       "signatures": [
         {
           "presentation": "Printer Check",
-          "parameters": []
+          "parameters": [],
+          "offset": 564
         }
       ],
       "link": "https://amospromanual.dev/10-03-accessing-a-printer.html#fn-printer-check",
@@ -99,7 +117,8 @@
       "signatures": [
         {
           "presentation": "Printer Online",
-          "parameters": []
+          "parameters": [],
+          "offset": 584
         }
       ],
       "link": "https://amospromanual.dev/10-03-accessing-a-printer.html#fn-printer-online",
@@ -112,7 +131,8 @@
       "signatures": [
         {
           "presentation": "Printer Error",
-          "parameters": []
+          "parameters": [],
+          "offset": 622
         }
       ],
       "link": "https://amospromanual.dev/10-03-accessing-a-printer.html#fn-printer-error",
@@ -125,7 +145,8 @@
       "signatures": [
         {
           "presentation": "Printer Base",
-          "parameters": []
+          "parameters": [],
+          "offset": 604
         }
       ],
       "link": "https://amospromanual.dev/10-03-accessing-a-printer.html#fn-printer-base",
@@ -163,6 +184,12 @@
       "signatures": [
         {
           "presentation": "Serial Open",
+          "parameters": [],
+          "offset": 6
+        },
+        {
+          "offset": 28,
+          "commaGroups": 5,
           "parameters": []
         }
       ],
@@ -175,6 +202,12 @@
       "signatures": [
         {
           "presentation": "Serial Close",
+          "parameters": [],
+          "offset": 44
+        },
+        {
+          "offset": 64,
+          "commaGroups": 1,
           "parameters": []
         }
       ],
@@ -187,6 +220,12 @@
       "signatures": [
         {
           "presentation": "Serial Speed",
+          "parameters": [],
+          "offset": 72
+        },
+        {
+          "offset": 134,
+          "commaGroups": 2,
           "parameters": []
         }
       ],
@@ -199,7 +238,8 @@
       "signatures": [
         {
           "presentation": "Serial Bits",
-          "parameters": []
+          "parameters": [],
+          "offset": 156
         }
       ],
       "link": "https://amospromanual.dev/10-04-accessing-a-serial-port.html#i-serial-bits"
@@ -211,7 +251,8 @@
       "signatures": [
         {
           "presentation": "Serial Parity",
-          "parameters": []
+          "parameters": [],
+          "offset": 216
         }
       ],
       "link": "https://amospromanual.dev/10-04-accessing-a-serial-port.html#i-serial-parity"
@@ -223,7 +264,8 @@
       "signatures": [
         {
           "presentation": "Serial X",
-          "parameters": []
+          "parameters": [],
+          "offset": 178
         }
       ],
       "link": "https://amospromanual.dev/10-04-accessing-a-serial-port.html#i-serial-x"
@@ -235,7 +277,8 @@
       "signatures": [
         {
           "presentation": "Serial Send",
-          "parameters": []
+          "parameters": [],
+          "offset": 114
         }
       ],
       "link": "https://amospromanual.dev/10-04-accessing-a-serial-port.html#i-serial-send"
@@ -247,7 +290,8 @@
       "signatures": [
         {
           "presentation": "Serial Out",
-          "parameters": []
+          "parameters": [],
+          "offset": 332
         }
       ],
       "link": "https://amospromanual.dev/10-04-accessing-a-serial-port.html#i-serial-out"
@@ -259,7 +303,8 @@
       "signatures": [
         {
           "presentation": "Serial Get",
-          "parameters": []
+          "parameters": [],
+          "offset": 238
         }
       ],
       "link": "https://amospromanual.dev/10-04-accessing-a-serial-port.html#fn-serial-get",
@@ -272,7 +317,8 @@
       "signatures": [
         {
           "presentation": "Serial Input$",
-          "parameters": []
+          "parameters": [],
+          "offset": 256
         }
       ],
       "link": "https://amospromanual.dev/10-04-accessing-a-serial-port.html#fn-serial-input-dollar",
@@ -285,7 +331,8 @@
       "signatures": [
         {
           "presentation": "Serial Buf",
-          "parameters": []
+          "parameters": [],
+          "offset": 196
         }
       ],
       "link": "https://amospromanual.dev/10-04-accessing-a-serial-port.html#i-serial-buf"
@@ -297,7 +344,8 @@
       "signatures": [
         {
           "presentation": "Serial Fast",
-          "parameters": []
+          "parameters": [],
+          "offset": 276
         }
       ],
       "link": "https://amospromanual.dev/10-04-accessing-a-serial-port.html#i-serial-fast"
@@ -309,7 +357,8 @@
       "signatures": [
         {
           "presentation": "Serial Slow",
-          "parameters": []
+          "parameters": [],
+          "offset": 294
         }
       ],
       "link": "https://amospromanual.dev/10-04-accessing-a-serial-port.html#i-serial-slow"
@@ -321,7 +370,8 @@
       "signatures": [
         {
           "presentation": "Serial Check",
-          "parameters": []
+          "parameters": [],
+          "offset": 94
         }
       ],
       "link": "https://amospromanual.dev/10-04-accessing-a-serial-port.html#fn-serial-check",
@@ -334,7 +384,8 @@
       "signatures": [
         {
           "presentation": "Serial Status",
-          "parameters": []
+          "parameters": [],
+          "offset": 354
         }
       ],
       "link": "https://amospromanual.dev/10-04-accessing-a-serial-port.html#fn-serial-status",
@@ -347,7 +398,8 @@
       "signatures": [
         {
           "presentation": "Serial Error",
-          "parameters": []
+          "parameters": [],
+          "offset": 312
         }
       ],
       "link": "https://amospromanual.dev/10-04-accessing-a-serial-port.html#fn-serial-error",
@@ -360,7 +412,8 @@
       "signatures": [
         {
           "presentation": "Serial Abort",
-          "parameters": []
+          "parameters": [],
+          "offset": 392
         }
       ],
       "link": "https://amospromanual.dev/10-04-accessing-a-serial-port.html#i-serial-abort"
@@ -372,7 +425,8 @@
       "signatures": [
         {
           "presentation": "Serial Base",
-          "parameters": []
+          "parameters": [],
+          "offset": 374
         }
       ],
       "link": "https://amospromanual.dev/10-04-accessing-a-serial-port.html#fn-serial-base",
@@ -385,7 +439,8 @@
       "signatures": [
         {
           "presentation": "Parallel Open",
-          "parameters": []
+          "parameters": [],
+          "offset": 642
         }
       ],
       "link": "https://amospromanual.dev/10-05-the-parallel-port.html#i-parallel-open"
@@ -397,7 +452,8 @@
       "signatures": [
         {
           "presentation": "Parallel Close",
-          "parameters": []
+          "parameters": [],
+          "offset": 662
         }
       ],
       "link": "https://amospromanual.dev/10-05-the-parallel-port.html#i-parallel-close"
@@ -409,7 +465,8 @@
       "signatures": [
         {
           "presentation": "Parallel Send",
-          "parameters": []
+          "parameters": [],
+          "offset": 682
         }
       ],
       "link": "https://amospromanual.dev/10-05-the-parallel-port.html#i-parallel-send"
@@ -421,7 +478,8 @@
       "signatures": [
         {
           "presentation": "Parallel Out",
-          "parameters": []
+          "parameters": [],
+          "offset": 702
         }
       ],
       "link": "https://amospromanual.dev/10-05-the-parallel-port.html#i-parallel-out"
@@ -433,6 +491,12 @@
       "signatures": [
         {
           "presentation": "Parallel Input$",
+          "parameters": [],
+          "offset": 826
+        },
+        {
+          "offset": 850,
+          "commaGroups": 2,
           "parameters": []
         }
       ],
@@ -446,7 +510,8 @@
       "signatures": [
         {
           "presentation": "Parallel Abort",
-          "parameters": []
+          "parameters": [],
+          "offset": 724
         }
       ],
       "link": "https://amospromanual.dev/10-05-the-parallel-port.html#i-parallel-abort"
@@ -458,7 +523,8 @@
       "signatures": [
         {
           "presentation": "Parallel Check",
-          "parameters": []
+          "parameters": [],
+          "offset": 744
         }
       ],
       "link": "https://amospromanual.dev/10-05-the-parallel-port.html#fn-parallel-check",
@@ -471,7 +537,8 @@
       "signatures": [
         {
           "presentation": "Parallel Error",
-          "parameters": []
+          "parameters": [],
+          "offset": 806
         }
       ],
       "link": "https://amospromanual.dev/10-05-the-parallel-port.html#fn-parallel-error",
@@ -484,7 +551,8 @@
       "signatures": [
         {
           "presentation": "Parallel Status",
-          "parameters": []
+          "parameters": [],
+          "offset": 764
         }
       ],
       "link": "https://amospromanual.dev/10-05-the-parallel-port.html#fn-parallel-status",
@@ -497,7 +565,8 @@
       "signatures": [
         {
           "presentation": "Parallel Base",
-          "parameters": []
+          "parameters": [],
+          "offset": 786
         }
       ],
       "link": "https://amospromanual.dev/10-05-the-parallel-port.html#fn-parallel-base",
