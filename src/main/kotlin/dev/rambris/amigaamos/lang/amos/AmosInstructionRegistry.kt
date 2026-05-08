@@ -188,8 +188,8 @@ object AmosInstructionRegistry {
     ) {
         val isWord: Boolean get() = type == AmosTokenTypes.keyword || type == AmosTokenTypes.identifier || type == AmosTokenTypes.stringVariable || type == AmosTokenTypes.floatVariable
         val isComma: Boolean get() = type == AmosTokenTypes.comma && text == ","
-        val isOpenParen: Boolean get() = type == AmosTokenTypes.paren && text == "("
-        val isCloseParen: Boolean get() = type == AmosTokenTypes.paren && text == ")"
+        val isOpenParen: Boolean get() = type == AmosTokenTypes.lparen
+        val isCloseParen: Boolean get() = type == AmosTokenTypes.rparen
     }
 
     private data class ConsumedValue(

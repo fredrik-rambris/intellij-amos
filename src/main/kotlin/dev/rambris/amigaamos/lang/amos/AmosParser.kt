@@ -104,23 +104,19 @@ class AmosParser : PsiParser {
     }
 
     private fun skipArrayIndexAccess(builder: PsiBuilder) {
-        if (builder.tokenType != AmosTokenTypes.paren || builder.tokenText != "(") {
+        if (builder.tokenType != AmosTokenTypes.lparen) {
             return
         }
 
         var depth = 0
         while (!builder.eof()) {
-            if (builder.tokenType == AmosTokenTypes.paren) {
-                when (builder.tokenText) {
-                    "(" -> depth++
-                    ")" -> {
-                        depth--
-                        builder.advanceLexer()
-                        if (depth <= 0) {
-                            return
-                        }
-                        continue
-                    }
+            when (builder.tokenType) {
+                AmosTokenTypes.lparen -> depth++
+                AmosTokenTypes.rparen -> {
+                    depth--
+                    builder.advanceLexer()
+                    if (depth <= 0) return
+                    continue
                 }
             }
             builder.advanceLexer()

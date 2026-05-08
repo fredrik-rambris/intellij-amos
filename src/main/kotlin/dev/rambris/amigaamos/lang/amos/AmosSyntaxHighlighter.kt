@@ -25,7 +25,24 @@ class AmosSyntaxHighlighter : SyntaxHighlighterBase() {
             AmosTokenTypes.comment -> pack(COMMENT)
             AmosTokenTypes.operator -> pack(OPERATOR)
             AmosTokenTypes.comma -> pack(COMMA)
-            AmosTokenTypes.paren -> pack(PAREN)
+            AmosTokenTypes.lparen,
+            AmosTokenTypes.rparen,
+            AmosTokenTypes.lbracket,
+            AmosTokenTypes.rbracket,
+            AmosTokenTypes.lbrace,
+            AmosTokenTypes.rbrace -> pack(PAREN)
+            AmosTokenTypes.ifKeyword,
+            AmosTokenTypes.endIfKeyword,
+            AmosTokenTypes.forKeyword,
+            AmosTokenTypes.nextKeyword,
+            AmosTokenTypes.whileKeyword,
+            AmosTokenTypes.wendKeyword,
+            AmosTokenTypes.repeatKeyword,
+            AmosTokenTypes.untilKeyword,
+            AmosTokenTypes.doKeyword,
+            AmosTokenTypes.loopKeyword,
+            AmosTokenTypes.procedureKeyword,
+            AmosTokenTypes.endProcKeyword -> pack(KEYWORD)
             TokenType.BAD_CHARACTER -> pack(BAD_CHAR)
             else -> EMPTY
         }

@@ -84,7 +84,8 @@ class AmosDocumentationProvider : AbstractDocumentationProvider() {
         return tokenType == AmosTokenTypes.keyword ||
             tokenType == AmosTokenTypes.identifier ||
             tokenType == AmosTokenTypes.stringVariable ||
-            tokenType == AmosTokenTypes.floatVariable
+            tokenType == AmosTokenTypes.floatVariable ||
+            (tokenType != null && AmosTokenTypes.allBlockKeywords.contains(tokenType))
     }
 
     private fun buildDoc(definition: AmosCallableDefinition): String {

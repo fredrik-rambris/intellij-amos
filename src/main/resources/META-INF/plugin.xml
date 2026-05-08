@@ -106,6 +106,9 @@
         <lang.documentationProvider
                 language="AMAL"
                 implementationClass="dev.rambris.amigaamos.lang.amal.AmalDocumentationProvider"/>
+        <lang.braceMatcher
+                language="AMOS"
+                implementationClass="dev.rambris.amigaamos.lang.amos.AmosBraceMatcher"/>
         <typedHandler implementation="dev.rambris.amigaamos.lang.amos.AmosTypedHandler"/>
         <lang.commenter
                 language="AMOS"

@@ -41,6 +41,7 @@ object AmosCodeStyleFormatter {
             val tokenText = source.substring(lexer.tokenStart, lexer.tokenEnd)
             val currentWordUpper = if (
                 tokenType == AmosTokenTypes.keyword ||
+                (tokenType != null && AmosTokenTypes.allBlockKeywords.contains(tokenType)) ||
                 tokenType == AmosTokenTypes.identifier ||
                 tokenType == AmosTokenTypes.stringVariable ||
                 tokenType == AmosTokenTypes.floatVariable
@@ -78,14 +79,36 @@ object AmosCodeStyleFormatter {
                         tokenText.uppercase(Locale.ROOT)
                     }
                 }
+                AmosTokenTypes.ifKeyword,
+                AmosTokenTypes.endIfKeyword,
+                AmosTokenTypes.forKeyword,
+                AmosTokenTypes.nextKeyword,
+                AmosTokenTypes.whileKeyword,
+                AmosTokenTypes.wendKeyword,
+                AmosTokenTypes.repeatKeyword,
+                AmosTokenTypes.untilKeyword,
+                AmosTokenTypes.doKeyword,
+                AmosTokenTypes.loopKeyword,
+                AmosTokenTypes.procedureKeyword,
+                AmosTokenTypes.endProcKeyword -> {
+                    tokenText.split(Regex("\\s+")).joinToString(" ") { word ->
+                        if (word.isEmpty()) word
+                        else word.lowercase(Locale.ROOT).replaceFirstChar { it.titlecase(Locale.ROOT) }
+                    }
+                }
+                AmosTokenTypes.number -> if (tokenText.startsWith("$")) tokenText.uppercase(Locale.ROOT) else tokenText
                 TokenType.BAD_CHARACTER,
                 TokenType.WHITE_SPACE,
-                AmosTokenTypes.number,
                 AmosTokenTypes.string,
                 AmosTokenTypes.comment,
                 AmosTokenTypes.operator,
                 AmosTokenTypes.comma,
-                AmosTokenTypes.paren,
+                AmosTokenTypes.lparen,
+                AmosTokenTypes.rparen,
+                AmosTokenTypes.lbracket,
+                AmosTokenTypes.rbracket,
+                AmosTokenTypes.lbrace,
+                AmosTokenTypes.rbrace,
                 null -> tokenText
                 else -> tokenText
             }
@@ -96,7 +119,8 @@ object AmosCodeStyleFormatter {
                 currentWordUpper == "PROC" -> true
                 tokenType == TokenType.WHITE_SPACE && (tokenText.contains('\n') || tokenText.contains('\r')) -> false
                 tokenType == AmosTokenTypes.operator && tokenText == ":" -> false
-                tokenType == TokenType.BAD_CHARACTER && (tokenText == "[" || tokenText == "]") -> false
+                tokenType == AmosTokenTypes.lbracket || tokenType == AmosTokenTypes.rbracket -> false
+                tokenType == AmosTokenTypes.lbrace || tokenType == AmosTokenTypes.rbrace -> false
                 inProcedureCallList && tokenType == AmosTokenTypes.comma -> true
                 inProcedureCallList && tokenType == TokenType.WHITE_SPACE -> true
                 inProcedureCallList && currentWordUpper != null -> true

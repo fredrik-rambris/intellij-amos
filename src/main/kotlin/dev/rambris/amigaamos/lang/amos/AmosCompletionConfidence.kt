@@ -29,7 +29,7 @@ class AmosCompletionConfidence : CompletionConfidence() {
             tokenType == AmosTokenTypes.comment ||
             tokenType == AmosTokenTypes.operator ||
             tokenType == AmosTokenTypes.comma ||
-            tokenType == AmosTokenTypes.paren ||
+            (tokenType != null && AmosTokenTypes.allParens.contains(tokenType)) ||
             tokenType == TokenType.WHITE_SPACE ||
             tokenType == TokenType.BAD_CHARACTER
         ) {

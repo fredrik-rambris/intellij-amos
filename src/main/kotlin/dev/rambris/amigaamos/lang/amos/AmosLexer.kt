@@ -123,12 +123,38 @@ class AmosLexer : LexerBase() {
                 return
             }
 
+            if (word == "END") {
+                val nextStart = skipWhitespaceNoNewline(i)
+                if (nextStart != null) {
+                    val nextEnd = readWordEnd(nextStart)
+                    if (nextEnd > nextStart) {
+                        val nextWord = buffer.subSequence(nextStart, nextEnd).toString().uppercase(Locale.ROOT)
+                        when (nextWord) {
+                            "IF" -> { tokenEnd = nextEnd; tokenType = AmosTokenTypes.endIfKeyword; return }
+                            "PROC" -> { tokenEnd = nextEnd; tokenType = AmosTokenTypes.endProcKeyword; return }
+                        }
+                    }
+                }
+            }
+
             tokenEnd = i
-            tokenType = when {
-                word in AmosCommandIndex.keywordsByWord -> AmosTokenTypes.keyword
-                word.endsWith("$") -> AmosTokenTypes.stringVariable
-                word.endsWith("#") -> AmosTokenTypes.floatVariable
-                else -> AmosTokenTypes.identifier
+            tokenType = when (word) {
+                "IF" -> AmosTokenTypes.ifKeyword
+                "FOR" -> AmosTokenTypes.forKeyword
+                "WHILE" -> AmosTokenTypes.whileKeyword
+                "REPEAT" -> AmosTokenTypes.repeatKeyword
+                "DO" -> AmosTokenTypes.doKeyword
+                "NEXT" -> AmosTokenTypes.nextKeyword
+                "WEND" -> AmosTokenTypes.wendKeyword
+                "UNTIL" -> AmosTokenTypes.untilKeyword
+                "LOOP" -> AmosTokenTypes.loopKeyword
+                "PROCEDURE" -> AmosTokenTypes.procedureKeyword
+                else -> when {
+                    word.endsWith("$") -> AmosTokenTypes.stringVariable
+                    word.endsWith("#") -> AmosTokenTypes.floatVariable
+                    word in AmosCommandIndex.keywordsByWord -> AmosTokenTypes.keyword
+                    else -> AmosTokenTypes.identifier
+                }
             }
             return
         }
@@ -139,11 +165,12 @@ class AmosLexer : LexerBase() {
             return
         }
 
-        if (first == '(' || first == ')') {
-            tokenEnd = tokenStart + 1
-            tokenType = AmosTokenTypes.paren
-            return
-        }
+        if (first == '(') { tokenEnd = tokenStart + 1; tokenType = AmosTokenTypes.lparen; return }
+        if (first == ')') { tokenEnd = tokenStart + 1; tokenType = AmosTokenTypes.rparen; return }
+        if (first == '[') { tokenEnd = tokenStart + 1; tokenType = AmosTokenTypes.lbracket; return }
+        if (first == ']') { tokenEnd = tokenStart + 1; tokenType = AmosTokenTypes.rbracket; return }
+        if (first == '{') { tokenEnd = tokenStart + 1; tokenType = AmosTokenTypes.lbrace; return }
+        if (first == '}') { tokenEnd = tokenStart + 1; tokenType = AmosTokenTypes.rbrace; return }
 
         if (first in "=+-*/<>:^.&:") {
             tokenEnd = tokenStart + 1
@@ -183,6 +210,23 @@ class AmosLexer : LexerBase() {
             return true
         }
         return buffer[i] == '\n' || buffer[i] == '\r'
+    }
+
+    private fun skipWhitespaceNoNewline(offset: Int): Int? {
+        var i = offset
+        while (i < endOffset && (buffer[i] == ' ' || buffer[i] == '\t')) {
+            i++
+        }
+        if (i >= endOffset || buffer[i] == '\n' || buffer[i] == '\r') return null
+        return i
+    }
+
+    private fun readWordEnd(offset: Int): Int {
+        var i = offset
+        while (i < endOffset && (buffer[i].isLetter() || buffer[i] == '_')) {
+            i++
+        }
+        return i
     }
 }
 

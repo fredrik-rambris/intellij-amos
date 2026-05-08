@@ -120,7 +120,7 @@ object AmosFunctionRegistry {
                 tokenType == AmosTokenTypes.comment -> reset()
                 inParameters && tokenType == AmosTokenTypes.comma -> parameterIndex++
                 inParameters -> Unit
-                collectingKeywords && tokenType == AmosTokenTypes.keyword -> {
+                collectingKeywords && (tokenType == AmosTokenTypes.keyword || AmosTokenTypes.allBlockKeywords.contains(tokenType)) -> {
                     stmtKeywords.add(tokenText.uppercase(Locale.ROOT))
                     val candidate = stmtKeywords.joinToString(" ")
                     if (candidate in instructionNames) instructionName = candidate
@@ -168,12 +168,12 @@ object AmosFunctionRegistry {
                         else -> word
                     }
                 }
-                tokenType == AmosTokenTypes.paren && tokenText == "(" -> {
+                tokenType == AmosTokenTypes.lparen -> {
                     val name = pendingFunctionName?.takeIf { hasSignatures(it) }
                     stack += CallFrame(name, lexer.tokenStart, 0)
                     pendingFunctionName = null
                 }
-                tokenType == AmosTokenTypes.paren && tokenText == ")" -> {
+                tokenType == AmosTokenTypes.rparen -> {
                     if (stack.isNotEmpty()) {
                         stack.removeLast()
                     }

@@ -83,17 +83,10 @@ class AmosEnterHandlerDelegate : EnterHandlerDelegate {
                 if (currentWithoutLeading.isEmpty()) {
                     val closeStatement = AmosStatementSupport.autoCloseStatementFor(formattedPrev.trimStart())
                     if (closeStatement != null) {
-                        val nextLine = currentLine + 1
-                        val nextAlreadyMatches = if (nextLine < document.lineCount) {
-                            val nextStart = document.getLineStartOffset(nextLine)
-                            val nextEnd = document.getLineEndOffset(nextLine)
-                            val nextText = document.getText(TextRange(nextStart, nextEnd)).trimStart()
-                            nextText.equals(closeStatement, ignoreCase = true)
-                        } else {
-                            false
-                        }
+                        val closerKey = AmosStatementSupport.statementKey(closeStatement)
+                        val alreadyClosed = hasMatchingCloser(document, currentLine + 1, prevKey, closerKey)
 
-                        if (!nextAlreadyMatches) {
+                        if (!alreadyClosed) {
                             val closerIndent = prevIndent
                             val insertionOffset = document.getLineEndOffset(currentLine)
                             val isRepeatBlock = closeStatement.equals("Until", ignoreCase = true)
@@ -119,5 +112,23 @@ class AmosEnterHandlerDelegate : EnterHandlerDelegate {
         )
 
         return Result.Continue
+    }
+
+    private fun hasMatchingCloser(document: com.intellij.openapi.editor.Document, fromLine: Int, openerKey: String, closerKey: String): Boolean {
+        var nesting = 1
+        for (lineIndex in fromLine until document.lineCount) {
+            val lineStart = document.getLineStartOffset(lineIndex)
+            val lineEnd = document.getLineEndOffset(lineIndex)
+            val lineText = document.getText(TextRange(lineStart, lineEnd)).trimStart()
+            val key = AmosStatementSupport.statementKey(lineText)
+            when (key) {
+                openerKey -> nesting++
+                closerKey -> {
+                    nesting--
+                    if (nesting == 0) return true
+                }
+            }
+        }
+        return false
     }
 }

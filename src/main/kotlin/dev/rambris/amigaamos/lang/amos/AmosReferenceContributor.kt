@@ -370,7 +370,8 @@ internal object AmosSymbolIndex {
             type == AmosTokenTypes.identifier ||
                 type == AmosTokenTypes.stringVariable ||
                 type == AmosTokenTypes.floatVariable ||
-                type == AmosTokenTypes.keyword
+                type == AmosTokenTypes.keyword ||
+                (type != null && AmosTokenTypes.allBlockKeywords.contains(type))
         val isVariable: Boolean =
             type == AmosTokenTypes.identifier ||
                 type == AmosTokenTypes.stringVariable ||
