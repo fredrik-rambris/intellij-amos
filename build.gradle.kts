@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "dev.rambris"
-version = "1.0.0-beta.4"
+version = "1.0.0-beta.5"
 
 repositories {
     mavenCentral()
