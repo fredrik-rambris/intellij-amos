@@ -196,6 +196,41 @@ class AmosFormattingTest {
         assertEquals("LINE$=LINE$+\"!\"", result)
     }
 
+    @Test
+    fun formatterRemovesSpacesAroundOperators() {
+        val source = "X = 1 + 2 * 3"
+        val result = AmosCodeStyleFormatter.format(source)
+        assertEquals("X=1+2*3", result)
+    }
+
+    @Test
+    fun formatterRemovesSpacesAfterCommas() {
+        val source = "Screen Open 0, 320, 200, 8, Lowres"
+        val result = AmosCodeStyleFormatter.format(source)
+        assertEquals("Screen Open 0,320,200,8,Lowres", result)
+    }
+
+    @Test
+    fun formatterRemovesSpacesAroundAssignmentWithExpression() {
+        val source = "BNUM= Length(LBANK)/ 6- 1"
+        val result = AmosCodeStyleFormatter.format(source)
+        assertEquals("BNUM=Length(LBANK)/6-1", result)
+    }
+
+    @Test
+    fun formatterPreservesSpacesAroundKeywordOperators() {
+        val source = "Until Timer- T> 50* 8 or Inkey$<> \"\" or Fire(1)"
+        val result = AmosCodeStyleFormatter.format(source)
+        assertEquals("Until Timer-T>50*8 or Inkey$<>\"\" or Fire(1)", result)
+    }
+
+    @Test
+    fun formatterPreservesColonSeparatorSpacingWhenRemovingOperatorSpaces() {
+        val source = "X= 1 : Y= 2"
+        val result = AmosCodeStyleFormatter.format(source)
+        assertEquals("X=1 : Y=2", result)
+    }
+
     // --- helpers ---
 
     private fun normalizeForComparison(text: String): String {

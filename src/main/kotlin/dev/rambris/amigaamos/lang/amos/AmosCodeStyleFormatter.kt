@@ -18,7 +18,8 @@ object AmosCodeStyleFormatter {
         }
 
         val cased = normalizeTokenCasing(source)
-        val spaced = normalizeColonSpacing(cased)
+        val operatorSpaced = normalizeOperatorSpacing(cased)
+        val spaced = normalizeColonSpacing(operatorSpaced)
         return applyBlockIndentation(spaced)
     }
 
@@ -26,7 +27,8 @@ object AmosCodeStyleFormatter {
     fun formatLine(line: String): String {
         if (line.isEmpty()) return line
         val cased = normalizeTokenCasing(line)
-        return normalizeColonSpacing(cased).trimEnd()
+        val operatorSpaced = normalizeOperatorSpacing(cased)
+        return normalizeColonSpacing(operatorSpaced).trimEnd()
     }
 
     private fun normalizeTokenCasing(source: String): String {
@@ -134,6 +136,37 @@ object AmosCodeStyleFormatter {
             lexer.advance()
         }
 
+        return result.toString()
+    }
+
+    private fun normalizeOperatorSpacing(source: String): String {
+        val lexer = AmosLexer()
+        lexer.start(source)
+
+        data class Tok(val type: IElementType?, val text: String)
+        val tokens = mutableListOf<Tok>()
+        while (lexer.tokenType != null) {
+            tokens += Tok(lexer.tokenType, source.substring(lexer.tokenStart, lexer.tokenEnd))
+            lexer.advance()
+        }
+
+        val result = StringBuilder(source.length)
+        for (i in tokens.indices) {
+            val (type, text) = tokens[i]
+            if (type == TokenType.WHITE_SPACE && !text.contains('\n') && !text.contains('\r')) {
+                val prevToken = (i - 1 downTo 0).firstOrNull { tokens[it].type != TokenType.WHITE_SPACE }?.let { tokens[it] }
+                val nextToken = (i + 1 until tokens.size).firstOrNull { tokens[it].type != TokenType.WHITE_SPACE }?.let { tokens[it] }
+
+                val adjacentToOperator =
+                    (prevToken?.type == AmosTokenTypes.operator && prevToken.text != ":") ||
+                    (nextToken?.type == AmosTokenTypes.operator && nextToken.text != ":") ||
+                    prevToken?.type == AmosTokenTypes.comma ||
+                    nextToken?.type == AmosTokenTypes.comma
+
+                if (adjacentToOperator) continue
+            }
+            result.append(text)
+        }
         return result.toString()
     }
 
